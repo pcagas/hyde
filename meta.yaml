@@ -1,0 +1,31 @@
+package:
+  name: hyde
+  version: "0.1"
+
+source:
+  path: ./
+
+build:
+  number: 20190609
+
+requirements:
+  build:
+    - python
+    - setuptools
+
+  run:
+    - python
+    - postgkyl
+    - flask
+    - redis
+    - redis-py
+    - zmq
+
+test:
+  imports:
+    - hyde
+
+about:
+  home: https://bitbucket.org/ammarhakim/hyde
+  license: BSD
+  license_file: LICENSE
