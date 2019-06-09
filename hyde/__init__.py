@@ -20,4 +20,7 @@ License:
 __version__ = '1.0'
 
 # import submodules
-from . import Sim
+from . import sim
+
+# import selected classes to the root
+from .sim.User import User
