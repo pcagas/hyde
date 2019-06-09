@@ -1,9 +1,9 @@
 # About
 
 This is Hyde, a web UX for the Gkeyll code. The goal of the project is
-to provide a web-drive UX for Gkeyll that allows editing input files,
-running code, doing viz and maintaining notes. Also provided are a
-source code browser.
+to provide a browser-driven UX for Gkeyll that allows editing input
+files, running code, doing viz and maintaining notes. Also provided
+are a source code browser.
 
 # Documentation
 
@@ -13,12 +13,13 @@ Documentation is available at [ReadTheDocs](http://gkeyll.rtfd.io).
 
 Hyde requires the following packages:
 
+ * Gkeyll 2.0
  * postgkyl
  * flask
  * zeromq
  * redis
 
-You can install Hyder directly through Conda (all dependencies will be
+You can install Hyde directly through Conda (all dependencies will be
 downloaded and installed automatically):
 
 ~~~~~~~
