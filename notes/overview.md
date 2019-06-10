@@ -8,12 +8,11 @@ Hyde depends on the following packages:
 
 - Gkeyll 2.0
 - postgkyl
-- flask
-- zeromq
-- redis
-- Vue (https://vuejs.org)
-
-Vue.js will be used to build the web client-side code.
+- flask (web-server)
+- zeromq (async communication)
+- redis (in-memory DB)
+- bokeh (viz; https://bokeh.pydata.org/en/latest/)
+- Vue (front-end client; https://vuejs.org)
 
 ## Data storage policy
 
@@ -44,8 +43,8 @@ deleted).
 
 Each User has the following data stored for it:
 
-- User group (allowing previledge access to features/machies)
+- User group (allowing privileged access to features/machies)
 - List of examples (User can add/remove from this list)
 - List of user specific templates
-- List of simulations performed
+- List of past simulations performed
 - List of currently running simulations

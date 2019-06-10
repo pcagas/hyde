@@ -17,10 +17,19 @@ License:
 
 """
 
+## Hyde ------------------------------------------------------------------------
+##
+## Top-level import module
+##    _______     ___
+## + 6 @ |||| # P ||| +
+## -----------------------------------------------------------------------------
+
 __version__ = '1.0'
 
 # import submodules
 from . import sim
+from . import config
 
 # import selected classes to the root
 from .sim.User import User
+from .sim.User import UserManager
