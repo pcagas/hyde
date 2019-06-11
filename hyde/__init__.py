@@ -33,3 +33,6 @@ from . import config
 # import selected classes to the root
 from .sim.User import User
 from .sim.User import UserManager
+
+from .sim.Sim import Sim
+from .sim.Sim import SimManager
