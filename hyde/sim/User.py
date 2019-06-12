@@ -12,11 +12,18 @@ user.
 - usergroup:guest : Set of all guest users
 - usergroup:regular : Set of all regular users
 - usergroup:super : Set of all super users
+- usergroup:deleted : Set of all deleted users
 
-- user:uid : hash with {name, group, dateCreated}
-- user:uid:runningsims : set of sim IDs that are currently running
-- user:uid:pendingsims : set of sim IDs that are pending
-- user:uid:completedsims : set of sim IDs that are completed
+- user:uid : hash with {name, group, dateCreated, ip}
+- user:uid:running : set of sim IDs that are currently running
+- user:uid:pending : set of sim IDs that are pending
+- user:uid:completed : set of sim IDs that are completed
+
+There are an additional set of simulations:
+
+- user:uid:template : These are simulations marked by user as template
+
+A template simulation can be copied to create other simulations.
 
    _______     ___
 + 6 @ |||| # P ||| +
@@ -40,24 +47,25 @@ class UserManager(object):
     def __init__(self):
         self.rHandle = redis.Redis(host=conf.redisServer, port=conf.redisPort)
     
-    def createNewUser(self, name):
+    def createNewUser(self, name, ugroup=None):
         r"""createNewUser(name : str) -> User object
         """
 
         group = "regular"
-        userId = uuid.uuid4().hex
-    
-        self.rHandle.sadd('users', userId)
         if name == "guest":
             group = "guest"
-            self.rHandle.sadd('usergroup:guest', userId)
-        else:
-            self.rHandle.sadd('usergroup:regular', userId)
-    
+        if ugroup:
+            group = ugroup
+
+        userId = uuid.uuid4().hex
+        self.rHandle.sadd('users', userId)
+
+        self.rHandle.sadd(f'usergroup:{group}', userId)
         self.rHandle.hmset(f'user:{userId}', {
             'name' : name,
             'group' : group,
-            'dateCreated' : datetime.datetime.now().isoformat()
+            'dateCreated' : datetime.datetime.now().isoformat(),
+            'ip' : 'null'
         })
 
         # create user directory
@@ -71,7 +79,19 @@ class UserManager(object):
             self.rHandle.smembers("users")
         )
 
+    def removeUser(self, userId):
+        if self.rHandle.sismember('users', userId):
+            group = self.rHandle.hget(f'user:{userId}', 'group').decode('utf-8')
+            if group in ['guest', 'regular', 'super']:
+                # just mark user as 'deleted'. Full cleanup can't be
+                # done here to avoid issues with running/queued jobs
+                self.rHandle.srem(f'usergroup:{group}', userId)
+                self.rHandle.hset(f'user:{userId}', 'group', 'deleted')
+                self.rHandle.sadd('usergroup:deleted', userId)
+
     def getUsersInGroup(self, group):
+        r"""group is one of 'guest', 'regular', 'super'
+        """
         return hyde.sim.utils.convertToStrSet(
             self.rHandle.smembers(f"usergroup:{group}")
         )
@@ -100,6 +120,8 @@ class User(object):
         return v.decode('utf-8')
 
     def simList(self, state):
+        r"""state is one of 'pending', 'running', 'completed'
+        """
         userId = self.userId
         return hyde.sim.utils.convertToStrSet(
             self.rHandle.smembers(f"user:{userId}:{state}")

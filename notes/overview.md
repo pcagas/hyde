@@ -12,7 +12,7 @@ Hyde depends on the following packages:
 - zeromq (async communication)
 - redis (in-memory DB)
 - bokeh (viz; https://bokeh.pydata.org/en/latest/)
-- Vue (front-end client; https://vuejs.org)
+- Vue.js (front-end client; https://vuejs.org)
 
 ## Data storage policy
 
@@ -38,19 +38,27 @@ The communication will be performed with ZeroMQ and Redis pub/sub.
 
 The User object stores all information about a user. Guest users are
 allowed, although there is no data persistence for guest user. (That
-is, once a guest user closes the browser, all server-side data is
+is, once a guest user closes the browser, all server-side data is soon
 deleted).
 
 Each User has the following data stored for it (see User.py file for
 more information):
 
 - User group (allowing privileged access to features/machies)
-- List of examples (User can add/remove from this list)
 - List of user specific templates
 - List of running, pending and completed simulations
 
 When a new user is created a directory is made in simroot. All input
 files are stored in this directory as sub-directories.
+
+When a user is removed he is marked as 'deleted' but the data is not
+immediately removed from the system. This is because immediate removal
+may cause problems with already queued and running simulations. A
+seperate process (cron job or something else) will periodically cull
+users with the 'deleted' tag.
+
+To cull guest users and deleted user, perhaps a thing to do is
+schedule cleanup via Redis timed queue, rather than a cron job.
 
 ## Simulation object
 

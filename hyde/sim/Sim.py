@@ -19,6 +19,10 @@ table.
 
 Sims IDs are also added to the user's appropriate simulation lists.
 
+A special set of simulations are marked as "examples":
+
+- sims:examples : Set of sytem provided examples
+
    _______     ___
 + 6 @ |||| # P ||| +
 
@@ -49,12 +53,9 @@ class SimManager(object):
         """
 
         if not self.rHandle.sismember(f'users', userId):
-            # do not create simulation if user does not exist
             return None
 
-        group = "pending"
         simId = uuid.uuid4().hex
-
         now = datetime.datetime.now().isoformat()
     
         self.rHandle.sadd('sims:pending', simId)
@@ -68,6 +69,27 @@ class SimManager(object):
         })
         
         return Sim(simId)
+
+    def createNewTemplateSim(self, sim):
+        r"""createNewTemplateSim(sim : Sim) -> Sim
+
+        Create a template simulation from given simulation
+        """
+        userId = sim.userId
+        s = self.createNewSim(sim.name(), userId, sim.inpFile())
+        # remove from 'pending' and add to 'template'
+        self.rHandle.srem('sims:pending', s.simId)
+        self.rHandle.srem(f'user:{userId}:pending', s.simId)
+        self.rHandle.sadd(f'user:{userId}:template', s.simId)
+
+        return s
+
+    def getSimsInState(self, state):
+        r"""state is one of 'running', 'pending', 'completed', 'queued'
+        """
+        return hyde.sim.utils.convertToStrSet(
+            self.rHandle.smembers(f"sims:{state}")
+        )
 
 class Sim(object):
     """Control object for simulation.
