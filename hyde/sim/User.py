@@ -16,7 +16,7 @@ user.
 
 - user:uid : hash with {name, group, dateCreated, ip}
 - user:uid:running : set of sim IDs that are currently running
-- user:uid:pending : set of sim IDs that are pending
+- user:uid:editing : set of sim IDs that are editing
 - user:uid:completed : set of sim IDs that are completed
 
 There are an additional set of simulations:
@@ -120,7 +120,7 @@ class User(object):
         return v.decode('utf-8')
 
     def simList(self, state):
-        r"""state is one of 'pending', 'running', 'completed'
+        r"""state is one of 'editing', 'running', 'completed'
         """
         userId = self.userId
         return hyde.sim.utils.convertToStrSet(

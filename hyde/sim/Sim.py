@@ -9,7 +9,7 @@ simulation.
 
 - sims:running : Set of running simulations
 - sims:queued : Set of queued simulations
-- sims:pending : Set of pending simulations
+- sims:editing : Set of editing simulations
 - sims:completed : Set of completed simulations
 
 - sim:uid : hash with {name, userID, inpFile, dateCreated, dateEdited}
@@ -57,8 +57,8 @@ class SimManager(object):
         simId = uuid.uuid4().hex
         now = datetime.datetime.now().isoformat()
     
-        self.rHandle.sadd('sims:pending', simId)
-        self.rHandle.sadd(f'user:{userId}:pending', simId)
+        self.rHandle.sadd('sims:editing', simId)
+        self.rHandle.sadd(f'user:{userId}:editing', simId)
         self.rHandle.hmset(f'sim:{simId}', {
             'name' : name,
             'userId' : userId,
@@ -77,9 +77,9 @@ class SimManager(object):
 
         userId = sim.userId
         s = self.createNewSim(sim.name(), userId, sim.inpFile())
-        # remove from 'pending' and add to 'template'
-        self.rHandle.srem('sims:pending', s.simId)
-        self.rHandle.srem(f'user:{userId}:pending', s.simId)
+        # remove from 'editing' and add to 'template'
+        self.rHandle.srem('sims:editing', s.simId)
+        self.rHandle.srem(f'user:{userId}:editing', s.simId)
         self.rHandle.sadd(f'user:{userId}:template', s.simId)
 
         return s
@@ -110,7 +110,7 @@ class SimManager(object):
         return Sim(simId)
 
     def getSimsInState(self, state):
-        r"""state is one of 'running', 'pending', 'completed', 'queued'
+        r"""state is one of 'running', 'editing', 'completed', 'queued'
         """
         return hyde.sim.utils.convertToStrSet(
             self.rHandle.smembers(f"sims:{state}")
@@ -166,8 +166,8 @@ class Sim(object):
     def updateInpFile(self, inpFile):
         simId = self.simId
         userId = self.userId
-        if self.rHandle.sismember(f'user:{userId}:pending', simId):
-            # only allow editing files in 'pending' state
+        if self.rHandle.sismember(f'user:{userId}:editing', simId):
+            # only allow editing files in 'editing' state
             self.rHandle.hset(f'sim:{simId}', 'inpFile', inpFile)
             self.rHandle.hset(f'sim:{simId}', 'dateEdited', datetime.datetime.now().isoformat())
             

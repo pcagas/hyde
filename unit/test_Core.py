@@ -33,20 +33,20 @@ class TestUser(unittest.TestCase):
 
     def test_sims(self):
         simManager = hyde.SimManager()
-        slist = simManager.getSimsInState("pending")
+        slist = simManager.getSimsInState("editing")
         self.assertEqual(3, len(slist))
         
         a = hyde.User(ammar.userId)
-        ammarPending = a.simList("pending")
-        self.assertEqual(1, len(ammarPending))
+        ammarEditing = a.simList("editing")
+        self.assertEqual(1, len(ammarEditing))
 
         ammarTemplate = a.simList("template")
         self.assertEqual(1, len(ammarTemplate))
 
         j = hyde.User(jimmy.userId)
 
-        jimmyPending = j.simList("pending")
-        self.assertEqual(2, len(jimmyPending))
+        jimmyEditing = j.simList("editing")
+        self.assertEqual(2, len(jimmyEditing))
 
         jimmyTemplate = j.simList("template")
         self.assertEqual(0, len(jimmyTemplate))
