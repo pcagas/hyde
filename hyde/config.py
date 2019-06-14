@@ -21,6 +21,7 @@ class Config(object):
 
         self.redisServer = 'localhost' # redis server URL
         self.redisPort = 6379 # redis server port
+        self.gkylRoot = os.path.expandvars('$HOME/gkylsoft/gkyl') # gkyl installation
         self.simRoot = os.path.expandvars('$HOME/gkylsoft/sims') # root directory
 
         # load data from configure file if specified
@@ -30,6 +31,7 @@ class Config(object):
 
             self.redisServer = cvals["redis-server"]
             self.redisPort = cvals["redis-port"]
+            self.gkylRoot = cvals["gkyl-root"]
             self.simRoot = cvals["sim-root"]
 
 

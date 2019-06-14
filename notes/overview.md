@@ -9,10 +9,9 @@ Hyde depends on the following packages:
 - Gkeyll 2.0
 - postgkyl
 - flask (web-server)
-- zeromq (async communication)
 - redis (in-memory DB)
 - bokeh (viz; https://bokeh.pydata.org/en/latest/)
-- Vue.js (front-end client; https://vuejs.org)
+- React (front-end client library)
 
 ## Data storage policy
 

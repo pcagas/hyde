@@ -18,6 +18,7 @@ Hyde requires the following packages:
  * flask
  * zeromq
  * redis
+ * react.js
 
 You can install Hyde directly through Conda (all dependencies will be
 downloaded and installed automatically):

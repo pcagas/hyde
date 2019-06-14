@@ -28,11 +28,13 @@ A special set of simulations are marked as "examples":
 
 """
 
-import uuid
-import redis
 import datetime
+import glob
 import hyde.config
 import hyde.sim.utils
+import redis
+import uuid
+import ntpath
 
 # Global configuration information
 conf = hyde.config.hydeConfig
@@ -51,9 +53,6 @@ class SimManager(object):
         userId : User ID of user creating simulation
         inpFile : String with input file
         """
-
-        if not self.rHandle.sismember(f'users', userId):
-            return None
 
         simId = uuid.uuid4().hex
         now = datetime.datetime.now().isoformat()
@@ -75,6 +74,7 @@ class SimManager(object):
 
         Create a template simulation from given simulation
         """
+
         userId = sim.userId
         s = self.createNewSim(sim.name(), userId, sim.inpFile())
         # remove from 'pending' and add to 'template'
@@ -84,6 +84,31 @@ class SimManager(object):
 
         return s
 
+    def _createNewExampleSim(self, exampleFile):
+        r"""_createNewExampleSim(exampleFile : str) -> Sim
+
+        Create an example simulation from full path to input file
+        """
+        
+        h, name = ntpath.split(exampleFile)
+        inpFile = open(exampleFile).read()
+
+        simId = name # use name as ID for example sims
+        now = datetime.datetime.now().isoformat()
+
+        # add simulation to DB
+        self.rHandle.hmset(f'sim:{simId}', {
+            'name' : name,
+            'userId' : '__gkyl__12345$#@__', # one hopes no user has this strange name
+            'inpFile' : inpFile,
+            'dateCreated' : now,
+            'dateEdited' : now
+        })
+        # add to list of examples
+        self.rHandle.sadd('sims:examples', simId)
+        
+        return Sim(simId)
+
     def getSimsInState(self, state):
         r"""state is one of 'running', 'pending', 'completed', 'queued'
         """
@@ -91,8 +116,21 @@ class SimManager(object):
             self.rHandle.smembers(f"sims:{state}")
         )
 
+    def getExampleSims(self):
+        r"""getExampleSims() -> [] Sim
+
+        Returns list of example sim object. This call clears out the
+        list and recreates it everytime it is called.
+
+        """
+        
+        self.rHandle.delete('sims:examples') # remove existing examples
+        return [self._createNewExampleSim(f) for f in glob.glob(
+            conf.gkylRoot+"/bin/Tool/examples**/*.lua" # files from gkyl/bin/Tool/examples
+        )]
+
 class Sim(object):
-    """Control object for simulation.
+    """Data container for simulation.
     """
     
     def __init__(self, simId):
