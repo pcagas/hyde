@@ -3,11 +3,11 @@ import unittest
 
 userManager = hyde.UserManager()
 # create some users
-ammar = userManager.createNewUser("Ammar Hakim", "super")
-petr = userManager.createNewUser("Petr Cagas")
-bhuvana = userManager.createNewUser("Bhuvana Srinivasan")
-jimmy = userManager.createNewUser("Jimmy Juno")
-guest = userManager.createNewUser("guest")
+ammar = userManager.createNewUser("Ammar Hakim", "ammar", "ahakim@pppl.gov", "127.0.0.1", "super")
+petr = userManager.createNewUser("Petr Cagas", "petr", "cagas@vt.edu", "127.0.0.2")
+bhuvana = userManager.createNewUser("Bhuvana Srinivasan", "srinbhu", "bhuvana@vt.edu", "127.0.0.3")
+jimmy = userManager.createNewUser("Jimmy Juno", "jjuno", "jjuno@pppl.gov", "127.0.0.4")
+guest = userManager.createNewUser("guest", "guest", "guest@gmail.gov", "127.0.0.5")
 
 simManager = hyde.SimManager()
 # add simulation objects

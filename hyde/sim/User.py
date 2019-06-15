@@ -15,8 +15,8 @@ user.
 - usergroup:deleted : Set of all deleted users
 
 - user:uid : hash with {name, group, dateCreated, ip}
-- user:uid:running : set of sim IDs that are currently running
 - user:uid:editing : set of sim IDs that are editing
+- user:uid:running : set of sim IDs that are currently running
 - user:uid:completed : set of sim IDs that are completed
 
 There are an additional set of simulations:
@@ -47,7 +47,7 @@ class UserManager(object):
     def __init__(self):
         self.rHandle = redis.Redis(host=conf.redisServer, port=conf.redisPort)
     
-    def createNewUser(self, name, ugroup=None):
+    def createNewUser(self, name, username, email, ipAddress, ugroup=None):
         r"""createNewUser(name : str) -> User object
         """
 
@@ -64,8 +64,10 @@ class UserManager(object):
         self.rHandle.hmset(f'user:{userId}', {
             'name' : name,
             'group' : group,
-            'dateCreated' : datetime.datetime.now().isoformat(),
-            'ip' : 'null'
+            'username' : username,
+            'email' : email,
+            'ipAddress' : ipAddress,
+            'dateCreated' : datetime.datetime.now().isoformat()
         })
 
         # create user directory
@@ -111,11 +113,6 @@ class User(object):
         v = self.rHandle.hget(f'user:{userId}', 'name')
         return v.decode('utf-8')
 
-    def rename(self, newName):
-        userId = self.userId
-        self.rHandle.hset(f'user:{userId}', 'name', newName)
-        return self
-
     def group(self):
         userId = self.userId
         v = self.rHandle.hget(f'user:{userId}', 'group')
@@ -125,6 +122,16 @@ class User(object):
         userId = self.userId
         v = self.rHandle.hget(f'user:{userId}', 'dateCreated')
         return v.decode('utf-8')
+
+    def ipAddress(self):
+        userId = self.userId
+        v = self.rHandle.hget(f'user:{userId}', 'ip')
+        return v.decode('utf-8')
+
+    def rename(self, newName):
+        userId = self.userId
+        self.rHandle.hset(f'user:{userId}', 'name', newName)
+        return self
 
     def simList(self, state):
         r"""state is one of 'editing', 'running', 'completed'
