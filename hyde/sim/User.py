@@ -1,4 +1,4 @@
-"""Hyde: User management and storage.
+r"""Hyde: User management and storage.
 
 Data for users is stored in Redis. Users are identified by a userId, a
 32-character UUID. Each user belongs to either 'guest', 'regular' or
@@ -8,7 +8,7 @@ periodically.
 The following information is stored. Here, uid is the UUID for a given
 user.
 
-- users : Set of userIds in the system
+- users : Set of userIds in the system (except deleted users)
 - usergroup:guest : Set of all guest users
 - usergroup:regular : Set of all regular users
 - usergroup:super : Set of all super users
@@ -88,6 +88,8 @@ class UserManager(object):
                 self.rHandle.srem(f'usergroup:{group}', userId)
                 self.rHandle.hset(f'user:{userId}', 'group', 'deleted')
                 self.rHandle.sadd('usergroup:deleted', userId)
+            # remove from list of users
+            self.rHandle.srem('users', userId)
 
     def getUsersInGroup(self, group):
         r"""group is one of 'guest', 'regular', 'super'
@@ -108,6 +110,11 @@ class User(object):
         userId = self.userId
         v = self.rHandle.hget(f'user:{userId}', 'name')
         return v.decode('utf-8')
+
+    def rename(self, newName):
+        userId = self.userId
+        self.rHandle.hset(f'user:{userId}', 'name', newName)
+        return self
 
     def group(self):
         userId = self.userId

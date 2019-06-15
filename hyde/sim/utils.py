@@ -1,4 +1,4 @@
-"""Hyde: Utility functions
+r"""Hyde: Utility functions
 
    _______     ___
 + 6 @ |||| # P ||| +

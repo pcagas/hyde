@@ -1,4 +1,4 @@
-"""Hyde: Simulation management.
+r"""Hyde: Simulation management.
 
 Metadata for simulations is stored in Redis, while the simulation
 output is stored on disk. Each sim is identified by a simId, a
@@ -32,9 +32,9 @@ import datetime
 import glob
 import hyde.config
 import hyde.sim.utils
+import ntpath
 import redis
 import uuid
-import ntpath
 
 # Global configuration information
 conf = hyde.config.hydeConfig
@@ -167,7 +167,6 @@ class Sim(object):
         simId = self.simId
         userId = self.userId
         if self.rHandle.sismember(f'user:{userId}:editing', simId):
-            # only allow editing files in 'editing' state
             self.rHandle.hset(f'sim:{simId}', 'inpFile', inpFile)
             self.rHandle.hset(f'sim:{simId}', 'dateEdited', datetime.datetime.now().isoformat())
             
