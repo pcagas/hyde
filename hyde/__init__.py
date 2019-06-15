@@ -3,6 +3,7 @@
 Hyde (or HiGkyl) is a web user-interface package for Gkeyll 2.0 code.
 
 License: 
+
     We follow a open-source but closed development model. Release
     zip-balls will be provided, but access to the source-code
     repository is restricted to those who need to modify the code. In
@@ -31,8 +32,8 @@ from . import sim
 from . import config
 
 # import selected classes to the root
-from .sim.User import User
-from .sim.User import UserManager
+from .lib.User import User
+from .lib.User import UserManager
 
-from .sim.Sim import Sim
-from .sim.Sim import SimManager
+from .lib.Sim import Sim
+from .lib.Sim import SimManager

@@ -14,7 +14,7 @@ user.
 - usergroup:super : Set of all super users
 - usergroup:deleted : Set of all deleted users
 
-- user:uid : hash with {name, group, dateCreated, ip}
+- user:uid : hash with {name, userName, email, group, dateCreated, ip}
 - user:uid:editing : set of sim IDs that are editing
 - user:uid:running : set of sim IDs that are currently running
 - user:uid:completed : set of sim IDs that are completed
