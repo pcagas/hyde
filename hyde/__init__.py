@@ -28,7 +28,7 @@ License:
 __version__ = '1.0'
 
 # import submodules
-from . import sim
+from . import lib
 from . import config
 
 # import selected classes to the root

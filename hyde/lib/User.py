@@ -35,7 +35,7 @@ import uuid
 import redis
 import datetime
 import hyde.config
-import hyde.sim.utils
+import hyde.lib.utils
 
 # Global configuration information
 conf = hyde.config.hydeConfig

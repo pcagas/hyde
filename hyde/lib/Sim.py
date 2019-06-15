@@ -31,7 +31,7 @@ A special set of simulations are marked as "examples":
 import datetime
 import glob
 import hyde.config
-import hyde.sim.utils
+import hyde.lib.utils
 import ntpath
 import redis
 import uuid
