@@ -112,7 +112,7 @@ class SimManager(object):
     def getSimsInState(self, state):
         r"""state is one of 'running', 'editing', 'completed', 'queued'
         """
-        return hyde.sim.utils.convertToStrSet(
+        return hyde.lib.utils.convertToStrSet(
             self.rHandle.smembers(f"sims:{state}")
         )
 

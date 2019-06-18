@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+r"""Hyde: Server for static website.
+
+   _______     ___
++ 6 @ |||| # P ||| +
+
+"""
+
+from flask import Flask
+import hyde
+import os
+
+userManager = hyde.UserManager()
+simManager = hyde.SimManager()
+
+app = Flask(__name__)
+
+##
+# Top-level entry point
+##
+@app.route('/')
+def index():
+    return "Welcome to Gkeyll!"
+
+@app.route("/api/users")
+def getUsers():
+    userIds = userManager.getUsers()
+    ulist = ''
+    for uId in userIds:
+        u = hyde.User(uId)
+        ulist = ulist + u.name() + "; "
+
+    return ulist
+
+@app.route("/api/user")
+def getUser():
+    return "User method called"
+
+if __name__ == "__main__":
+   app.run(host='localhost', port=os.environ.get('PORT', 3000), debug=False)

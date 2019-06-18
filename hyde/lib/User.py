@@ -14,7 +14,7 @@ user.
 - usergroup:super : Set of all super users
 - usergroup:deleted : Set of all deleted users
 
-- user:uid : hash with {name, userName, email, group, dateCreated, ip}
+- user:uid : hash with {name, username, email, group, dateCreated, ip}
 - user:uid:editing : set of sim IDs that are editing
 - user:uid:running : set of sim IDs that are currently running
 - user:uid:completed : set of sim IDs that are completed
@@ -77,7 +77,7 @@ class UserManager(object):
         return User(userId)
     
     def getUsers(self):
-        return hyde.sim.utils.convertToStrSet(
+        return hyde.lib.utils.convertToStrSet(
             self.rHandle.smembers("users")
         )
 
@@ -137,6 +137,6 @@ class User(object):
         r"""state is one of 'editing', 'running', 'completed'
         """
         userId = self.userId
-        return hyde.sim.utils.convertToStrSet(
+        return hyde.lib.utils.convertToStrSet(
             self.rHandle.smembers(f"user:{userId}:{state}")
         )
