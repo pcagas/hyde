@@ -10,11 +10,18 @@ r"""Hyde: Server for static website.
 from flask import Flask
 import hyde
 import os
+import bokeh
+import json
+import postgkyl as pg
+from flask_cors import CORS
+from flask import request, json
 
 userManager = hyde.UserManager()
 simManager = hyde.SimManager()
 
 app = Flask(__name__)
+# CORS enabled so react frontend can pull data from python backend
+CORS(app)
 
 ##
 # Top-level entry point
@@ -37,5 +44,78 @@ def getUsers():
 def getUser():
     return "User method called"
 
+@app.route("/api/file/<fileName>")
+def getInputFile(fileName):
+    """returns the content of the file fileName
+    """
+    return fileName
+
+@app.route("/api/sim/create", methods=['POST'])
+def createSimulation():
+    """creates a simulation and returns its id
+    """
+    fileName = request.json['fileName']
+    name = request.json['name']
+    uid = "userid"
+    sim = simManager.createNewSim(name,uid,fileName)
+    return sim.simId
+
+@app.route("/api/sim/state/<status>")
+def getSimState(status):
+    """returns the simulation ids for a give state - running, editing, completed, queued
+    """
+    simIds = simManager.getSimsInState(status)
+    simList=[]
+    for simId in simIds:
+        sim = hyde.Sim(simId)
+        append(simList,sim.name())
+    return json.dumps(simList)
+
+@app.route("/api/sim/<simId>")
+def createTemplateSimulation(simId):
+    """creates a template simulation from given simulation
+    """
+    sim = hyde.Sim(simId)
+    newSim = simManager.createNewTemplateSim(sim)
+    return newSim.simId
+
+@app.route("/api/user/create", methods=['POST'])
+def createNewUser():
+    """creates a new user
+    """
+    name = request.json['name']
+    username = request.json['userName']
+    email = request.json['email']
+    ipAddress = 'localhost'
+    user = userManager.createNewUser(name, username, email, ipAddress)
+    return "User successfully created"
+
+@app.route("/api/user/remove/<userId>")
+def removeUser(userId):
+    """removes a user with his id
+    """
+    userManager.removeUser(userid)
+    return json.dumps({'success':True}, 200)
+
+@app.route("/api/users")
+def getUsersInGroup():
+    """retrieves user of a specific group
+    """
+    groupName  = request.params['group']
+    return userManager.getUsersInGroup(groupName)
+
+@app.route("/plot1")
+def plot1():
+    data = pg.GData('two-stream_elc_5.bp')
+    # dg = pg.GInterpModal(data)
+    # dg.interpolate(stack=True)
+    fig = pg.output.blot(data) 
+
+    output = json.dumps(bokeh.embed.json_item(fig, "name"))
+
+    return output
+
+
 if __name__ == "__main__":
    app.run(host='localhost', port=os.environ.get('PORT', 3000), debug=False)
+
