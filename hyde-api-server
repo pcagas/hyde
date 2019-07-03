@@ -71,6 +71,15 @@ def getSimState(status):
         append(simList,sim.name())
     return json.dumps(simList)
 
+@app.route("/api/sims")
+def getAllSims():
+    """
+    returns all simulations
+    """
+    sims = simManager.getAllSims()
+    print(sims)
+    return json.dumps({'sims': sims})
+
 @app.route("/api/sim/<simId>")
 def createTemplateSimulation(simId):
     """creates a template simulation from given simulation

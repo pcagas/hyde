@@ -44,7 +44,7 @@ class SimManager(object):
     """
     
     def __init__(self):
-        self.rHandle = redis.Redis(host=conf.redisServer, port=conf.redisPort)
+        self.rHandle = redis.Redis(host=conf.redisServer, port=conf.redisPort, decode_responses=True)
     
     def createNewSim(self, name, userId, inpFile):
         r"""createNewSim(name : str, userId : str, inpFile : str) -> Sim object
@@ -68,6 +68,12 @@ class SimManager(object):
         })
         
         return Sim(simId)
+
+    def getAllSims(self):
+        sims = []
+        for key in self.rHandle.scan_iter("sim:*"):
+            sims.append(self.rHandle.hgetall(key))
+        return sims
 
     def createNewTemplateSim(self, sim):
         r"""createNewTemplateSim(sim : Sim) -> Sim
