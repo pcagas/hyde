@@ -29,7 +29,8 @@ class SimList extends React.Component {
     }
 
     componentDidMount() {
-        fetch('http://localhost:3000/api/sims')
+        // fetch(`http://${location.hostname}:3000/api/sims`)
+        fetch(`http://localhost:3000/api/sims`)
             .then(response => response.json())
             .then(data => this.setState({ sims: data.sims }));
     }

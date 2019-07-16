@@ -7,16 +7,15 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import Close from '@material-ui/icons/Close';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import HGDrawer from '../drawer/HGDrawer';
 import Grid from '@material-ui/core/Grid';
 import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import Container from '@material-ui/core/Container';
 import HGContainer from '../container/HGContainer';
+import MyTab from '../utilities/MyTab'
 
 const drawerWidth = 240;
 
@@ -88,6 +87,7 @@ class Home extends React.Component {
     this.handleClose = this.handleClose.bind(this);
     this.handleOpenRow = this.handleOpenRow.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.handleTabClose = this.handleTabClose.bind(this);
 
   }
 
@@ -107,10 +107,65 @@ class Home extends React.Component {
     this.setState({ anchorEl: null });
   }
 
-  handleOpenRow(row) {
+  handleTabClose(tabName) {
     this.setState(state => {
-      const activeTabs = state.activeTabs.concat(row);
-      return { activeTabs };
+      const index = state.activeTabs.findIndex((element) => {
+        if (element.name == tabName) {
+          return true;
+        }
+        else {
+          return false;
+        }
+      });
+      if (index >= 0) {
+        const activeTabs = state.activeTabs.slice(0, index).concat(state.activeTabs.slice(index + 1));
+        var value = state.value;
+        if (value == index) {
+          if (index - 1 < 0 && index < activeTabs.length) {
+            value = index;
+          }
+          else if (index - 1 >= 0) {
+            value = index - 1;
+          }
+          else {
+            value = false;
+          }
+        }
+        else if (value < index) {
+          value = state.value;
+        }
+        else {
+          value = state.value - 1;
+        }
+        return { activeTabs, value };
+
+      }
+    })
+  }
+
+  handleOpenRow(row) {
+
+    this.setState(state => {
+      const index = state.activeTabs.findIndex((element) => {
+        if (element.name == row.name) {
+          return true;
+        }
+        else {
+          return false;
+        }
+      });
+      var value;
+      var activeTabs;
+      if (index >= 0) {
+        value = index;
+        activeTabs = state.activeTabs;
+      }
+      else {
+        activeTabs = state.activeTabs.concat(row);
+        value = activeTabs.length - 1;
+
+      }
+      return { activeTabs, value };
     })
   }
 
@@ -154,9 +209,9 @@ class Home extends React.Component {
               <Tabs value={this.state.value} onChange={this.handleChange} variant="scrollable"
                 scrollButtons="auto">
                 {this.state.activeTabs.map(tab => {
-                  const node = (<div>{tab.name}<IconButton size="small"><Close /></IconButton></div>)
+                  // const node = (<div>{tab.name}<IconButton size="small"><Close /></IconButton></div>)
                   return (
-                    <Tab label={node} key={tab.id} />
+                    <MyTab label={tab.name} key={tab.id} onTabClose={this.handleTabClose} />
                   )
                 })
                 }
@@ -197,7 +252,8 @@ class Home extends React.Component {
           </Grid>
         </AppBar>
         <HGDrawer open={openDrawer} onClickClose={this.handleDrawerClose}
-          onClickOpenRow={this.handleOpenRow} />
+          onClickOpenRow={this.handleOpenRow}
+        />
         <main className={clsx(classes.content, {
           [classes.contentShift]: openDrawer,
         })}>

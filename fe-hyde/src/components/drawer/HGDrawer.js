@@ -39,7 +39,7 @@ class HGDrawer extends React.Component {
     super(props)
     this.handleDrawerClose = this.handleDrawerClose.bind(this);
     this.handleItemClick = this.handleItemClick.bind(this);
-
+    
   }
 
   handleDrawerClose() {
@@ -66,10 +66,10 @@ class HGDrawer extends React.Component {
         }}
       >
         <div className={classes.drawerHeader}>
-          <div className={classes.title}>
-            <CreateFromNew />
-            <CreateFromExample />
-          </div>
+          {/* <div className={classes.title}> */}
+            <CreateFromNew onClickCreateFromNewButton={(row) => this.handleItemClick(row) } />
+            <CreateFromExample onClickCreateFromExampleButton={(row) => this.handleItemClick(row) } />
+          {/* </div> */}
           <IconButton onClick={this.handleDrawerClose}>
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>

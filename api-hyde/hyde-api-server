@@ -87,6 +87,16 @@ def createTemplateSimulation(simId):
     newSim = simManager.createNewTemplateSim(sim)
     return newSim.simId
 
+@app.route("/api/sims/exampleSims")
+def getExampleSims():
+    """
+    returns all example simulations
+    """
+    sims = simManager.getExampleSims()
+    sims = [{'name': sim.name(), 'dateCreated': sim.dateCreated()} for sim in sims]
+    print(sims)
+    return json.dumps({'sims': sims})
+
 @app.route("/api/user/create", methods=['POST'])
 def createNewUser():
     """creates a new user
