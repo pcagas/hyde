@@ -1,0 +1,12 @@
+name: hyde
+channels:
+  - gkyl
+  - defaults
+dependencies:
+  - flask
+  - flask-cors
+  - postgkyl
+  - bokeh
+  - redis-py
+prefix: /usr/local/anaconda3/envs/hyde
+

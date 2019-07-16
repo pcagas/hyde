@@ -10,6 +10,6 @@ def convertToStrSet(byteSet):
     """
     strSet = set()
     for e in byteSet:
-        strSet.add(e.decode('utf-8'))
+        strSet.add(e)
     return strSet
 

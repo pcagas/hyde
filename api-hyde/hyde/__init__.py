@@ -28,12 +28,12 @@ License:
 __version__ = '1.0'
 
 # import submodules
-from . import lib
-from . import config
+import hyde.lib
+import hyde.config
 
 # import selected classes to the root
-from .lib.User import User
-from .lib.User import UserManager
+from hyde.lib.User import User
+from hyde.lib.User import UserManager
 
-from .lib.Sim import Sim
-from .lib.Sim import SimManager
+from hyde.lib.Sim import Sim
+from hyde.lib.Sim import SimManager

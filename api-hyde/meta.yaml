@@ -27,4 +27,4 @@ test:
 about:
   home: https://bitbucket.org/ammarhakim/hyde
   license: BSD
-  license_file: LICENSE
+  license_file: ../LICENSE
