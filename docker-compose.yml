@@ -1,0 +1,25 @@
+# docker-compose run -d
+version: '3'
+services:
+  fe-hyde:
+    # build:
+    #   context: ./fe-hyde
+    #   dockerfile: Dockerfile
+    image: lekhas/fe-hyde:latest
+    container_name: fe-hyde
+    ports:
+      - "8080:80"
+  api-hyde:
+    image: lekhas/api-hyde:latest
+    # build:
+    #   context: ./api-hyde
+    #   dockerfile: Dockerfile
+    container_name: api-hyde
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+  redis:
+    image: redis:3.0
+    ports:
+      - "6379:6379"
