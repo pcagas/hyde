@@ -1,0 +1,6 @@
+ECHO_TEST: successfully loaded your custom FW_config.yaml!
+
+LAUNCHPAD_LOC: /home/dalex_99/HYDEPROJECT/my_launchpad.yaml
+FWORKER_LOC: /home/dalex_99/HYDEPROJECT/my_fworker.yaml
+QUEUEADAPTER_LOC: /home/dalex_99/HYDEPROJECT/my_qadapter.yaml
+

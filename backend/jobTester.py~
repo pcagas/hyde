@@ -1,0 +1,18 @@
+from jobManager import jobManager, WFlowBuilder
+
+jobM = jobManager()
+jobM.process_request('Daniel_1', 1)
+#wF = WFlowBuilder()
+#jobM.overload()
+#wF.addRunSteps(1)
+#wF.slurm_launch()
+
+#jobM.oneJob()
+#jobM.oneJob()
+
+#jobM.runAll()
+#jobM.runParallel()
+#jobM.rerun0()
+
+
+
