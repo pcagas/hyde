@@ -1,0 +1,10 @@
+syntax: glob
+*~
+*.pyc
+*~
+#*#
+.#*
+.DS_Store
+hyde/.DS_Store
+flask/.DS_Store
+__pychace__
