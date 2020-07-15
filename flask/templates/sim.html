@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Add</title>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/editor.css')}}"/>
+</head>
+{% extends 'index.html' %}
+
+{% block content %}
+<div id="main" style="position: absolute; left:50%; top:50%; transform:translate(-50%, -50%); display:lnline-block;">
+    <form id="add_form">
+        <label for="add_name"><b>Name</b>：
+            <input type="text" 
+                   name="add_name"
+                   autocomplete="off" 
+                   placeholder="Enter Name Here" 
+                   value="{{"" if selectedSim == "" else selectedSim[1].name()}}">
+        </label>
+<!--         <label for="add_inpFile">Content: 
+            <textarea name="add_inpFile">{{"" if selectedSim == "" else selectedSim[1].inpFile()}}</textarea>
+        </label> -->
+        <div id=editorContainer>
+            <div id="editor">{{"" if selectedSim == "" else selectedSim[1].inpFile()}}</div>    
+        </div>
+        <input type="submit" class="button" value={{"Register" if selectedSim == "" else "Edit/Save!"}}>
+    </form>
+</div>
+<script src="static/js/ace.js" type="text/javascript" charset="utf-8"></script> 
+<script src="static/js/ext-language_tools.js"></script>
+<script>
+    ace.require("ext/language_tools");
+    let editor = ace.edit("editor");//loading ace editor
+    editor.setTheme("ace/theme/monokai");//set theme
+    editor.getSession().setMode("ace/mode/lua");//language set-up
+    editor.setFontSize(14)
+    editor.setOptions({
+        enableLiveAutocompletion: true,
+        enableBasicAutocompletion: true,
+    });
+
+    window.addEventListener('load', () => {
+    const add_form = document.getElementById("add_form");
+    add_form.addEventListener('submit', e => {
+        e.preventDefault();
+        const path = new URLSearchParams(window.location.search);
+        const id = path.get("id");//ex) http://127.0.0.1:5000/sim?id=hello, path => ?id=hello, path.get('id') => hello
+        const name = e.target[0].value;
+        const inpFile = editor.getValue();
+        fetch(`http://${window.location.host}/adding`, { //fetch API, sending info to this url with optional parameters
+            method: 'POST',
+            headers: {
+                "content-type":"application/json"
+            },
+            body: JSON.stringify({
+                id,
+                name,
+                inpFile
+            }),
+            redirect: 'manual'
+        })
+        .then(result => result.json())
+        .then(data =>window.location.assign(data.path))
+    });
+});
+</script>
+{% endblock %}

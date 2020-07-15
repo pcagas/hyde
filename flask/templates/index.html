@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/sidenav.css')}}"/>
+  </head>
+
+  <body>
+      <span style="font-size:30px; cursor:pointer; display:inline-block" onclick="openNav()">&#9776;</span>
+      <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+          <form method='POST'>
+            <button><a href="/sim">ADD</a></button>
+            <button><a href="/example">EXAMPLE</a></button>
+            <button><a href="/delete">DELETE</a></button>
+          </form>
+          <div id="content">
+            <h2>---Simulation Lists---</h2>
+            {% if simulation != None %}
+              <ul>
+                {% for (simId, sim) in simulation %}
+                  <li id={{ simId }}><a href="{{ "/sim?id={0}".format(simId) }}">{{sim.name()}}</a></li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+      </div>
+
+    {% block content %}
+    {% endblock %}
+    <script>
+      function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+        document.getElementById("main").style.marginLeft = "250px";
+      }
+      
+      function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("main").style.marginLeft = "0";
+      }      
+    </script>
+    </body>
+            
+</html>
