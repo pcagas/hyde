@@ -10,7 +10,7 @@
       <div id="mySidenav" class="sidenav">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
           <form method='POST'>
-            <button><a href="/sim">ADD</a></button>
+            <button><a href="/add">ADD</a></button>
             <button><a href="/example">EXAMPLE</a></button>
             <button><a href="/delete">DELETE</a></button>
           </form>
@@ -18,8 +18,8 @@
             <h2>---Simulation Lists---</h2>
             {% if simulation != None %}
               <ul>
-                {% for (simId, sim) in simulation %}
-                  <li id={{ simId }}><a href="{{ "/sim?id={0}".format(simId) }}">{{sim.name()}}</a></li>
+                {% for sim in simulation %}
+                  <li id={{ sim.simId }}><a href="{{ "/sim/{0}".format(sim.simId) }}">{{sim.name()}}</a></li>
                 {% endfor %}
               </ul>
             {% endif %}

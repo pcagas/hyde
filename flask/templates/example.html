@@ -3,39 +3,16 @@
 {% block content %}
 <div id="main" style="display:inline-block">
     <h2>Choose Examples</h2>
-    <form id="example_form">
-        <select>
+    <form id="example_form" action="{{ url_for('add') }}" method='POST'>
+        <select name="example_select">
             <option>Choose Examples</option>
-            <option value="Two Stream">Two Stream</option>
-            <option value="Shock">Shock</option>
-            <option value="Weibel">Weibel</option>
+            {% for f in example %}
+                <option value='{{ f }}'>{{ f }}</option>
+            {% endfor %}
         </select>
         <input type="submit" value="Select">
     </form>
 </div>
 
-<script>
-    window.addEventListener('load', () => {
-        const sel = document.getElementById('example_form');
-        sel.addEventListener('submit', e => {
-            e.preventDefault();
-            const path = new URLSearchParams(window.location.search);
-            fetch(`http://${window.location.host}/addingExample`, { //fetch API, sending info to this url with optional parameters
-                method: 'POST',
-                headers: {
-                    "content-type":"application/json"
-                },
-                body: JSON.stringify({
-                    id: path.get('id') || e.target[0].value,
-                    name: e.target[0].value,
-                }),
-                redirect: 'manual'
-            })
-            .then(result => result.json())
-            .then(data => window.location.assign(data.path));//once fetch(url) is done, go to the root url
-            
-        })
-    });
-</script>
 
 {% endblock %}

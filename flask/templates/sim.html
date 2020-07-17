@@ -14,19 +14,16 @@
                    name="add_name"
                    autocomplete="off" 
                    placeholder="Enter Name Here" 
-                   value="{{"" if selectedSim == "" else selectedSim[1].name()}}">
+                   value="{{ selectedSim.name() }}">
         </label>
-<!--         <label for="add_inpFile">Content: 
-            <textarea name="add_inpFile">{{"" if selectedSim == "" else selectedSim[1].inpFile()}}</textarea>
-        </label> -->
         <div id=editorContainer>
-            <div id="editor">{{"" if selectedSim == "" else selectedSim[1].inpFile()}}</div>    
+            <div id="editor">{{ selectedSim.inpFile() }}</div>    
         </div>
-        <input type="submit" class="button" value={{"Register" if selectedSim == "" else "Edit/Save!"}}>
+        <input type="submit" class="button" value="Save">
     </form>
 </div>
-<script src="static/js/ace.js" type="text/javascript" charset="utf-8"></script> 
-<script src="static/js/ext-language_tools.js"></script>
+<script src="{{ url_for('static', filename='js/ace.js') }}" type="text/javascript" charset="utf-8"></script> 
+<script src="{{ url_for('static', filename='js/ext-language_tools.js') }}"></script>
 <script>
     ace.require("ext/language_tools");
     let editor = ace.edit("editor");//loading ace editor
@@ -42,8 +39,8 @@
     const add_form = document.getElementById("add_form");
     add_form.addEventListener('submit', e => {
         e.preventDefault();
-        const path = new URLSearchParams(window.location.search);
-        const id = path.get("id");//ex) http://127.0.0.1:5000/sim?id=hello, path => ?id=hello, path.get('id') => hello
+        const path = new URL(window.location).pathname.split('/'); // ["", "sim", "uuid"]
+        const id = path[path.length - 1];
         const name = e.target[0].value;
         const inpFile = editor.getValue();
         fetch(`http://${window.location.host}/adding`, { //fetch API, sending info to this url with optional parameters
