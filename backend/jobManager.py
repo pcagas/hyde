@@ -42,7 +42,7 @@ class WFlowBuilder(object):
     def __init__(self):
 
         self.simManager = SimManager()
-        self.mainDir = '/home/dalex_99/backend/hydeSims/'
+        self.mainDir = '/home/dalex_99/hyde/backend/hydeSims/'
         self.worker = FWorker(name='myWorker')
         self.launchpad = LaunchPad()
         self.ids = []
@@ -67,13 +67,15 @@ class WFlowBuilder(object):
         ncores = str(self.queue1[1][i]) 
         path = self.mainDir+'Daniel_1'+'_'+self.queue1[0][i].name()+'_'+new_id+'/'
         #print(path)
+        
+        print(path+re.sub('.lua', '_elc_0.bp', self.queue1[0][i].name()))
 
         desttask = ScriptTask.from_str('mkdir ' + path)
         writetask = FileWriteTask({'files_to_write': ([{'filename': self.queue1[0][i].name(), 'contents': self.queue1[0][i].inpFile()}]), 'dest': path})
         runtask = ScriptTask.from_str('mpiexec -n '+ ncores + ' gkyl ' + path+self.queue1[0][i].name())
 
         runFlag = ScriptTask.from_str('redis-cli PUBLISH Daniel_1 Done')
-        deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(2+self.last))
+        deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(7+self.last))
         flagFail  = ScriptTask.from_str('Failed')
             
         plottask = ScriptTask.from_str('pgkyl -f '+ path+re.sub('.lua', '_elc_0.bp', self.queue1[0][i].name()) + ' plot')
@@ -89,12 +91,12 @@ class WFlowBuilder(object):
         self.ids.append(4+self.last)
         delfail = Firework(deleteFail, name='remove fail flag', fw_id=5+self.last)
         self.ids.append(5+self.last)
-        failflag = Firework(flagFail, name='fail flag', fw_id=2+self.last)
+        plot = Firework(plottask, name='plot', fw_id=6+self.last)
         self.ids.append(6+self.last)
-
-        plot = Firework(plottask, name='plot', fw_id=7+self.last)
+        failflag = Firework(flagFail, name='fail flag', fw_id=7+self.last)
         self.ids.append(7+self.last)
-    
+
+        
         self.fws.append(dest)
         self.fws.append(write)
         self.fws.append(run)
@@ -102,8 +104,9 @@ class WFlowBuilder(object):
         self.fws.append(delfail)
         self.fws.append(failflag)
         self.fws.append(plot)
-            
-        wf = Workflow([dest, write, run, flag1, delfail, failflag], {dest: [write], write: [run], run: [flag1], flag1: [delfail]}, name = 'Running '+self.queue1[0][i].name()+'_'+ncores)
+
+        print(self.ids)
+        wf = Workflow([dest, write, run, flag1, delfail, failflag, plot], {dest: [write], write: [run], run: [flag1], flag1: [delfail], delfail: [plot]}, name = 'Running '+self.queue1[0][i].name()+'_'+ncores)
         self.launchpad.add_wf(wf)
         
     def addFullQueue(self):
