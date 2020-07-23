@@ -128,6 +128,11 @@ class SimManager(object):
         return [self._createNewExampleSim(f) for f in glob.glob(
             conf.gkylRoot+"/bin/Tool/examples**/*.lua" # files from gkyl/bin/Tool/examples
         )]
+    
+    def removeSim(self, sim):
+        self.rHandle.srem('sims:editing', sim.simId)
+        self.rHandle.srem(f'user:{sim.userId}:editing', sim.simId)
+        self.rHandle.delete(f'sim:{sim.simId}')
 
 class Sim(object):
     """Data container for simulation.

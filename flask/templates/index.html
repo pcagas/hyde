@@ -2,22 +2,21 @@
 <html>
   <head>
     <title>Home</title>
-    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/sidenav.css')}}"/>
   </head>
 
   <body>
-      <span style="font-size:30px; cursor:pointer; display:inline-block" onclick="openNav()">&#9776;</span>
+      <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/index.css')}}"/>
       <div id="mySidenav" class="sidenav">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
           <form method='POST'>
-            <button><a href="/add">ADD</a></button>
-            <button><a href="/example">EXAMPLE</a></button>
-            <button><a href="/delete">DELETE</a></button>
+            <button id='add'><a href="/add">ADD</a></button>
+            <button id='example'><a href="/example">EXAMPLE</a></button>
+            <button id='delete'><a href="javascript:void(0)">DELETE</a></button>
           </form>
           <div id="content">
             <h2>---Simulation Lists---</h2>
             {% if simulation != None %}
-              <ul>
+              <ul id='sim_list'>
                 {% for sim in simulation %}
                   <li id={{ sim.simId }}><a href="{{ "/sim/{0}".format(sim.simId) }}">{{sim.name()}}</a></li>
                 {% endfor %}
@@ -25,20 +24,14 @@
             {% endif %}
           </div>
       </div>
+      <div id='main'>
+          <span id='openNav' style="font-size:30px; cursor:pointer; display:inline-block" onclick="openNav()">&#9776;</span>
+          {% block content %}
+          {% endblock %}
+      </div>
 
-    {% block content %}
-    {% endblock %}
-    <script>
-      function openNav() {
-        document.getElementById("mySidenav").style.width = "250px";
-        document.getElementById("main").style.marginLeft = "250px";
-      }
-      
-      function closeNav() {
-        document.getElementById("mySidenav").style.width = "0";
-        document.getElementById("main").style.marginLeft = "0";
-      }      
-    </script>
+
+    <script src="{{ url_for('static', filename='js/index.js') }}" type="text/javascript" charset="utf-8"></script> 
     </body>
             
 </html>
