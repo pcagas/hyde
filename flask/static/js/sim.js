@@ -19,6 +19,9 @@ window.addEventListener('load', () => {
             redirect: 'manual'
         })
         .then(result => result.json())
-        .then(data =>window.location.assign(data.path))
     });
+    const run = document.getElementById("run")
+    run.addEventListener('click', () => {
+        fetch(`http://${window.location.host}/publishing`)
+    }, {once : true});
 });

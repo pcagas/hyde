@@ -22,7 +22,6 @@ del.addEventListener('click', () => {
         }
         isClicked = true;
     } else{
-        console.log(isClicked);
         for(let i = 0; i < sim_list.length; i++){
             const span = sim_list[i].getElementsByClassName('close')[0];
             span.parentElement.removeChild(span);

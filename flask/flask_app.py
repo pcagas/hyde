@@ -1,11 +1,13 @@
 from flask import Flask, render_template, url_for, request,redirect
 import os
 import hyde
-
+from backend import jobManager
 
 app = Flask(__name__)
 
-path = '/Users/user/2020_Internship/hyde'
+jobManager.jobManager()
+
+path = '/home/hjk6281/2020_Internship/hyde'
 os.chdir(path)
 files = []
 
@@ -105,3 +107,11 @@ def deleting():
         #end
     #end
     return redirect(request.referrer)
+
+@app.route("/publishing")
+def publishing():
+    sm.pubSim(f'{guest.name()}', 'run')
+    return redirect(request.referrer)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port='5000')

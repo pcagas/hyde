@@ -133,6 +133,9 @@ class SimManager(object):
         self.rHandle.srem('sims:editing', sim.simId)
         self.rHandle.srem(f'user:{sim.userId}:editing', sim.simId)
         self.rHandle.delete(f'sim:{sim.simId}')
+    
+    def pubSim(self, channle, message):
+        self.rHandle.publish(channle, message)
 
 class Sim(object):
     """Data container for simulation.
