@@ -1,6 +1,7 @@
 import hyde
 from hyde.lib.Sim import SimManager
 from hyde.lib.Sim import Sim
+from hyde.lib.User import User
 import postgkyl as pg
 
 from fireworks import Firework, Workflow, LaunchPad, ScriptTask, PyTask, FileWriteTask, FWorker
@@ -21,17 +22,18 @@ class jobManager(object):
     def __init__(self):
         self.client = redis.Redis()
         self.WF = WFlowBuilder()
-    def process_request(self, account_name, index):
+        
+    def process_request(self, user, inpSim):
         ps = self.client.pubsub()
-        ps.subscribe(account_name)
+        ps.subscribe(user.name())
         for response in ps.listen():
             if response['data'] == b'run':
                 print('STARTING JOB')
-                self.start_job(index)
+                self.start_job(inpSim)
                 break
         
-    def start_job(self, index):
-        self.WF.addRunSteps(index)
+    def start_job(self, user, inpSim):
+        self.WF.addRunSteps(userDir,inpSim)
         self.WF.slurm_launch()
         
 class WFlowBuilder(object):
@@ -41,15 +43,15 @@ class WFlowBuilder(object):
     def __init__(self):
 
         self.simManager = SimManager()
-        self.mainDir = '/home/adaniel99/hyde/backend/hydeSims/'
+        #self.mainDir = '/home/adaniel99/hyde/backend/hydeSims/'
         self.worker = FWorker(name='myWorker')
         self.launchpad = LaunchPad()
         self.ids = []
         self.fws = []
         self.last = 0
-        self.queue1 = [[self.simManager.getExampleSims()[0], self.simManager.getExampleSims()[1]], [1, 1]]
+        #self.queue1 = [[self.simManager.getExampleSims()[0], self.simManager.getExampleSims()[1]], [1, 1]]
      
-    def addRunSteps(self, index):
+    def addRunSteps(self, user, inpSim):
         #builds the following workflow for running simulations
         #creates directory for simulation using the sim name and uuid
         #writes gkyl input file to the directory
@@ -57,27 +59,29 @@ class WFlowBuilder(object):
         #if run is successful, prints 'Done', if not, prints 'Failed
         #plots task
 
+        #userid --> for folder location
         
         self.last=len(self.launchpad.get_fw_ids())
         i = index
 
         new_id = str(uuid.uuid4())
             
-        ncores = str(self.queue1[1][i]) 
-        path = self.mainDir+'_'+new_id+'/'
+        #ncores = str(self.queue1[1][i]) 
+        #path = self.mainDir+'_'+new_id+'/'
         #print(path)
+        path = '/home/adaniel99/gkylsoft/sims/'+str(user.userID)+'/'
         
-        print(path+re.sub('.lua', '_elc_0.bp', self.queue1[0][i].name()))
+        #print(path+re.sub('.lua', '_elc_0.bp', self.queue1[0][i].name()))
 
         desttask = ScriptTask.from_str('mkdir ' + path)
-        writetask = FileWriteTask({'files_to_write': ([{'filename': self.queue1[0][i].name(), 'contents': self.queue1[0][i].inpFile()}]), 'dest': path})
-        runtask = ScriptTask.from_str('mpiexec -n '+ ncores + ' gkyl ' + path+self.queue1[0][i].name())
+        writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name(), 'contents': inpSim.inpFile()}]), 'dest': path})
+        runtask = ScriptTask.from_str('mpiexec -n '+ ncores + ' gkyl ' + path+inpSim.name())
 
         runFlag = ScriptTask.from_str('redis-cli PUBLISH Daniel_1 Done')
         deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(7+self.last))
         flagFail  = ScriptTask.from_str('Failed')
             
-        plottask = ScriptTask.from_str('pgkyl -f '+ path+re.sub('.lua', '_elc_0.bp', self.queue1[0][i].name()) + ' plot')
+        plottask = ScriptTask.from_str('pgkyl -f '+ path+re.sub('.lua', '_elc_0.bp', inpSim.name()) + ' plot')
 
         dest = Firework(desttask, name= 'Make Folder', fw_id=1+self.last)
         self.ids.append(1+self.last)
