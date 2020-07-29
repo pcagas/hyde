@@ -1,7 +1,10 @@
 {% extends 'index.html' %}
 
 {% block content %}
-<div id="main" style="display:inline-block">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/example.css')}}"/>
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+<span><a href="/">Home</a></span>
+<div class='example'>
     <h2>Choose Examples</h2>
     <form id="example_form" action="{{ url_for('add') }}" method='POST'>
         <select name="example_select">
