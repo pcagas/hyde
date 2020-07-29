@@ -1,0 +1,8 @@
+2020-07-15 01:22:09 +0000 Notice:    Starting munge-0.5.14 daemon (pid 16967)
+2020-07-15 01:22:09 +0000 Info:      Set origin address to 127.0.1.1
+2020-07-15 01:22:09 +0000 Info:      Seeded PRNG with 128 bytes from getrandom()
+2020-07-15 01:22:09 +0000 Info:      Enabled PRNG entropy pool enhanced stirring
+2020-07-15 01:22:09 +0000 Info:      Disabled supplementary group mapping
+2020-07-15 01:22:09 +0000 Info:      Created socket "/tmp/munged.sock.16908"
+2020-07-15 01:22:09 +0000 Info:      Created 2 work threads
+2020-07-15 01:22:09 +0000 Info:      Replayed credential from 127.0.1.1

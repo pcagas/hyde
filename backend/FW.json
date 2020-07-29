@@ -1,0 +1,43 @@
+{
+    "spec": {
+        "_tasks": [
+            {
+                "script": [
+                    "gkyl /home/dalex_99/gkyl/Regression/vm-two-stream/p1/rt-two-stream-p1.lua"
+                ],
+                "use_shell": true,
+                "_fw_name": "ScriptTask"
+            }
+        ]
+    },
+    "fw_id": 1,
+    "created_on": "2020-07-20T15:18:01.471402",
+    "updated_on": "2020-07-20T15:18:24.344637",
+    "launches": [
+        {
+            "fworker": {
+                "name": "Automatically generated Worker",
+                "category": "",
+                "query": "{}",
+                "env": {}
+            },
+            "fw_id": 1,
+            "launch_dir": "/home/dalex_99/hyde/backend",
+            "host": "DESKTOP-K09CSUJ",
+            "ip": "127.0.1.1",
+            "trackers": [],
+            "action": null,
+            "state": "RUNNING",
+            "state_history": [
+                {
+                    "state": "RUNNING",
+                    "created_on": "2020-07-20T15:18:24.343222",
+                    "updated_on": "2020-07-20T15:18:24.343228"
+                }
+            ],
+            "launch_id": 1
+        }
+    ],
+    "state": "RUNNING",
+    "name": "run1"
+}
