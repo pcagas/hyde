@@ -3,16 +3,16 @@
         "_tasks": [
             {
                 "script": [
-                    "gkyl /home/dalex_99/gkyl/Regression/vm-two-stream/p1/rt-two-stream-p1.lua"
+                    "pgkyl -f /home/dalex_99/hyde/backend/hydeSims/Daniel_1_es-two-stream.lua_d468aa65-aef9-46e6-ac07-79cb359a2a1e/es-two-stream_elc_0.bp plot"
                 ],
                 "use_shell": true,
                 "_fw_name": "ScriptTask"
             }
         ]
     },
-    "fw_id": 1,
-    "created_on": "2020-07-20T15:18:01.471402",
-    "updated_on": "2020-07-20T15:18:24.344637",
+    "fw_id": 7,
+    "created_on": "2020-07-27T12:15:29.582076",
+    "updated_on": "2020-07-27T12:16:23.628566",
     "launches": [
         {
             "fworker": {
@@ -21,7 +21,7 @@
                 "query": "{}",
                 "env": {}
             },
-            "fw_id": 1,
+            "fw_id": 7,
             "launch_dir": "/home/dalex_99/hyde/backend",
             "host": "DESKTOP-K09CSUJ",
             "ip": "127.0.1.1",
@@ -31,13 +31,13 @@
             "state_history": [
                 {
                     "state": "RUNNING",
-                    "created_on": "2020-07-20T15:18:24.343222",
-                    "updated_on": "2020-07-20T15:18:24.343228"
+                    "created_on": "2020-07-27T12:16:23.627032",
+                    "updated_on": "2020-07-27T12:16:23.627038"
                 }
             ],
-            "launch_id": 1
+            "launch_id": 6
         }
     ],
     "state": "RUNNING",
-    "name": "run1"
+    "name": "plot"
 }

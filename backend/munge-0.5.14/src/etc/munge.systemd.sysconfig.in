@@ -1,4 +1,0 @@
-# MUNGE configuration
-
-# Pass additional command-line options to munged.
-# OPTIONS="--key-file=@sysconfdir@/munge/munge.key --num-threads=2"

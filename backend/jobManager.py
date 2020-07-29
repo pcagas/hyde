@@ -20,13 +20,12 @@ import sys
 class jobManager(object):
     def __init__(self):
         self.client = redis.Redis()
-        self.accounts = ['Daniel_1', 'Daniel_2', 'Daniel_3']
         self.WF = WFlowBuilder()
     def process_request(self, account_name, index):
         ps = self.client.pubsub()
         ps.subscribe(account_name)
         for response in ps.listen():
-            if response['data'] == b'start':
+            if response['data'] == b'run':
                 print('STARTING JOB')
                 self.start_job(index)
                 break
@@ -42,7 +41,7 @@ class WFlowBuilder(object):
     def __init__(self):
 
         self.simManager = SimManager()
-        self.mainDir = '/home/dalex_99/hyde/backend/hydeSims/'
+        self.mainDir = '/home/adaniel99/hyde/backend/hydeSims/'
         self.worker = FWorker(name='myWorker')
         self.launchpad = LaunchPad()
         self.ids = []
@@ -65,7 +64,7 @@ class WFlowBuilder(object):
         new_id = str(uuid.uuid4())
             
         ncores = str(self.queue1[1][i]) 
-        path = self.mainDir+'Daniel_1'+'_'+self.queue1[0][i].name()+'_'+new_id+'/'
+        path = self.mainDir+'_'+new_id+'/'
         #print(path)
         
         print(path+re.sub('.lua', '_elc_0.bp', self.queue1[0][i].name()))
@@ -138,8 +137,8 @@ class WFlowBuilder(object):
         #for testing multiple simultaneous runs
         
 
-        task1 = ScriptTask.from_str('gkyl /home/dalex_99/gkyl/Regression/vm-two-stream/p1/rt-two-stream-p1.lua')
-        task2 = ScriptTask.from_str('gkyl /home/dalex_99/gkyl/Regression/vm-two-stream/p2/rt-two-stream-p2.lua')
+        task1 = ScriptTask.from_str('gkyl /home/adaniel99/gkyl/Regression/vm-two-stream/p1/rt-two-stream-p1.lua')
+        task2 = ScriptTask.from_str('gkyl /home/adaniel99/gkyl/Regression/vm-two-stream/p2/rt-two-stream-p2.lua')
 
         run1 = Firework(task1, name = 'run1')
         run2 = Firework(task2, name = 'run2')
