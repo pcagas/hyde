@@ -28,7 +28,7 @@ class jobManager(object):
         ps.subscribe(user.name())
         for response in ps.listen():
             if response['data'] == b'run':
-                self.client.publish(user.name(), 'message received'
+                self.client.publish(user.name(), 'message received')
                 print('STARTING JOB')
                 self.start_job(user, inpSim)
         
