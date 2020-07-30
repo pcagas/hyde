@@ -76,10 +76,11 @@ class WFlowBuilder(object):
         path = '/home/adaniel99/gkylsoft/sims/'+str(user.userId)+'/'+new_id
         
         #print(path+re.sub('.lua', '_elc_0.bp', self.queue1[0][i].name()))
+        print(inpSim.name())
 
         desttask = ScriptTask.from_str('mkdir ' + path)
         writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name(), 'contents': inpSim.inpFile()}]), 'dest': path})
-        runtask = ScriptTask.from_str('mpiexec -n '+ str(ncores) + ' gkyl ' + path+inpSim.name())
+        runtask = ScriptTask.from_str('mpiexec -n '+ str(ncores) + ' gkyl ' + path+inpSim.name()+'.lua')
 
         runFlag = ScriptTask.from_str('redis-cli PUBLISH Daniel_1 Done')
         deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(7+self.last))
