@@ -23,14 +23,14 @@ class jobManager(object):
         self.client = redis.Redis()
         self.WF = WFlowBuilder()
         
-    def listen(self, user):
-        self.client.pubsub().subscribe(user.name())
-        self.client.pubsub().listen()
+    #def listen(self, user):
+        #self.client.pubsub().subscribe(user.name())
+        #self.client.pubsub().listen()
         
     def process_request(self, user, inpSim):
-        #ps = self.client.pubsub()
-        #ps.subscribe(user.name())
-        for response in self.client.pubsub().listen():
+        ps = self.client.pubsub()
+        ps.subscribe(user.name())
+        for response in ps.listen():
             if response['data'] == b'run':
                 self.client.publish(user.name(), 'message received')
                 print('STARTING JOB')
