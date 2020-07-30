@@ -73,7 +73,7 @@ class WFlowBuilder(object):
         #ncores = str(self.queue1[1][i]) 
         #path = self.mainDir+'_'+new_id+'/'
         #print(path)
-        path = '/home/adaniel99/gkylsoft/sims/'+str(user.userId)+'/'+new_id
+        path = '/home/adaniel99/gkylsoft/sims/'+str(user.userId)+'/'+new_id+'/'
         
         #print(path+re.sub('.lua', '_elc_0.bp', self.queue1[0][i].name()))
         print(inpSim.name())
