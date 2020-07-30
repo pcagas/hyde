@@ -66,7 +66,7 @@ class WFlowBuilder(object):
         #userid --> for folder location
         
         self.last=len(self.launchpad.get_fw_ids())
-        i = index
+        #i = index
 
         new_id = str(uuid.uuid4())
             
