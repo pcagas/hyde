@@ -69,7 +69,7 @@ class WFlowBuilder(object):
         #i = index
 
         new_id = str(uuid.uuid4())
-            
+        ncores=1
         #ncores = str(self.queue1[1][i]) 
         #path = self.mainDir+'_'+new_id+'/'
         #print(path)
