@@ -29,8 +29,7 @@ class jobManager(object):
         for response in ps.listen():
             if response['data'] == b'run':
                 print('STARTING JOB')
-                self.start_job(inpSim)
-                break
+                self.start_job(user, inpSim)
         
     def start_job(self, user, inpSim):
         self.WF.addRunSteps(userDir,inpSim)
