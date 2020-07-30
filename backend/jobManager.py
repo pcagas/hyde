@@ -113,7 +113,7 @@ class WFlowBuilder(object):
         self.fws.append(plot)
 
         print(self.ids)
-        wf = Workflow([dest, write, run, flag1, delfail, failflag, plot], {dest: [write], write: [run], run: [flag1], flag1: [delfail], delfail: [plot]}, name = 'Running '+self.queue1[0][i].name()+'_'+ncores)
+        wf = Workflow([dest, write, run, flag1, delfail, failflag, plot], {dest: [write], write: [run], run: [flag1], flag1: [delfail], delfail: [plot]}, name = 'Running '+self.inpSim.name()+'_'+str(ncores))
         self.launchpad.add_wf(wf)
         
     def addFullQueue(self):
@@ -176,7 +176,7 @@ class WFlowBuilder(object):
         for i in self.ids:
             #os.system('qlaunch -q /home/dalex_99/HYDEPROJECT/my_qadapter.yaml singleshot')
             #os.system('srun --ntasks=1 --cpus-per-task=1 rlaunch singleshot -f '+ str(i))
-            os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=xps rlaunch singleshot -f '+ str(i))
+            os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
               
     def simStates(self):
         #gets current state (str) for each firework in the queue
