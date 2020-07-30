@@ -79,14 +79,14 @@ class WFlowBuilder(object):
         print(inpSim.name())
 
         desttask = ScriptTask.from_str('mkdir ' + path)
-        writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name(), 'contents': inpSim.inpFile()}]), 'dest': path})
+        writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name()+'.lua', 'contents': inpSim.inpFile()}]), 'dest': path})
         runtask = ScriptTask.from_str('mpiexec -n '+ str(ncores) + ' gkyl ' + path+inpSim.name()+'.lua')
 
         runFlag = ScriptTask.from_str('redis-cli PUBLISH Daniel_1 Done')
         deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(7+self.last))
         flagFail  = ScriptTask.from_str('Failed')
             
-        plottask = ScriptTask.from_str('pgkyl -f '+ path+re.sub('.lua', '_elc_0.bp', inpSim.name()) + ' plot')
+        plottask = ScriptTask.from_str('pgkyl -f '+ path+re.sub('.lua', '_elc_0.bp', inpSim.name())+'.lua' + ' plot')
 
         dest = Firework(desttask, name= 'Make Folder', fw_id=1+self.last)
         self.ids.append(1+self.last)
