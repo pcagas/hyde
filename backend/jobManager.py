@@ -26,6 +26,7 @@ class jobManager(object):
     def listen(self, user):
         self.client.pubsub().subscribe(user.name())
         self.client.pubsub().listen()
+        print(self.client.pubsub().listen())
         
     def process_request(self, user, inpSim):
         ps = self.client.pubsub()
