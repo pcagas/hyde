@@ -113,7 +113,7 @@ class WFlowBuilder(object):
         self.fws.append(plot)
 
         print(self.ids)
-        wf = Workflow([dest, write, run, flag1, delfail, failflag, plot], {dest: [write], write: [run], run: [flag1], flag1: [delfail], delfail: [plot]}, name = 'Running '+self.inpSim.name()+'_'+str(ncores))
+        wf = Workflow([dest, write, run, flag1, delfail, failflag, plot], {dest: [write], write: [run], run: [flag1], flag1: [delfail], delfail: [plot]}, name = 'Running '+inpSim.name()+'_'+str(ncores))
         self.launchpad.add_wf(wf)
         
     def addFullQueue(self):
