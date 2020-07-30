@@ -79,7 +79,7 @@ class WFlowBuilder(object):
 
         desttask = ScriptTask.from_str('mkdir ' + path)
         writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name(), 'contents': inpSim.inpFile()}]), 'dest': path})
-        runtask = ScriptTask.from_str('mpiexec -n '+ ncores + ' gkyl ' + path+inpSim.name())
+        runtask = ScriptTask.from_str('mpiexec -n '+ str(ncores) + ' gkyl ' + path+inpSim.name())
 
         runFlag = ScriptTask.from_str('redis-cli PUBLISH Daniel_1 Done')
         deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(7+self.last))
