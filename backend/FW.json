@@ -3,16 +3,16 @@
         "_tasks": [
             {
                 "script": [
-                    "pgkyl -f /home/dalex_99/hyde/backend/hydeSims/Daniel_1_es-two-stream.lua_d468aa65-aef9-46e6-ac07-79cb359a2a1e/es-two-stream_elc_0.bp plot"
+                    "Failed"
                 ],
                 "use_shell": true,
                 "_fw_name": "ScriptTask"
             }
         ]
     },
-    "fw_id": 7,
-    "created_on": "2020-07-27T12:15:29.582076",
-    "updated_on": "2020-07-27T12:16:23.628566",
+    "fw_id": 175,
+    "created_on": "2020-07-31T17:49:01.418255",
+    "updated_on": "2020-07-31T17:49:07.758620",
     "launches": [
         {
             "fworker": {
@@ -21,23 +21,23 @@
                 "query": "{}",
                 "env": {}
             },
-            "fw_id": 7,
-            "launch_dir": "/home/dalex_99/hyde/backend",
-            "host": "DESKTOP-K09CSUJ",
-            "ip": "127.0.1.1",
+            "fw_id": 175,
+            "launch_dir": "/home/hjk6281/hyde/backend",
+            "host": "arc-a71f233b",
+            "ip": "10.0.1.17",
             "trackers": [],
             "action": null,
             "state": "RUNNING",
             "state_history": [
                 {
                     "state": "RUNNING",
-                    "created_on": "2020-07-27T12:16:23.627032",
-                    "updated_on": "2020-07-27T12:16:23.627038"
+                    "created_on": "2020-07-31T17:49:07.757736",
+                    "updated_on": "2020-07-31T17:49:07.757740"
                 }
             ],
-            "launch_id": 6
+            "launch_id": 93
         }
     ],
     "state": "RUNNING",
-    "name": "plot"
+    "name": "fail flag"
 }

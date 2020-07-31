@@ -38,7 +38,7 @@ class jobManager(object):
         simBool = False
         for response in ps.listen():
             if simBool == True and response['data'] is not None:
-                simid = response['data']
+                simid = response['data'].decode('ascii')
                 inpSim = Sim(simid)
                 self.start_job(inpSim)
             #print(response['data'])
