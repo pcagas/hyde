@@ -8,3 +8,4 @@ syntax: glob
 hyde/.DS_Store
 flask/.DS_Store
 __pychace__
+FW.json

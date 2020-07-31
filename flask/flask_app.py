@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 jobManager.jobManager()
 
-path = '/home/hjk6281/2020_Internship/hyde'
+path = '/home/hjk6281/hyde'
 os.chdir(path)
 files = []
 
@@ -26,7 +26,7 @@ def main():
     r""" main page. ask users to choose following options
     1. Add : add a new simulation
     2. Example: add new simulation from template
-    3. Delete: 
+    3. Delete: delete simulations from the sidebar/DB
     """
     editing_sim_list = list(sm.getSimsInState('editing'))#returns a list of simulation ids with the state of 'editing'
     return render_template('index.html', simulation=[hyde.Sim(simId) for simId in editing_sim_list])
@@ -45,7 +45,6 @@ def add():
         #end
     #end
 
-    # return {"path" : url_for("sim")}
     return redirect("172.23.60.54{}".format(url_for('sim', simId=newSim.simId)))
 
 @app.route("/sim/<simId>", methods=['GET','POST'])
