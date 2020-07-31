@@ -23,22 +23,27 @@ class jobManager(object):
         self.client = redis.Redis()
         self.WF = WFlowBuilder()
         
-    def listen(self, user):
-        self.client.pubsub().subscribe(user.name())
-        self.client.pubsub().listen()
-        print(self.client.pubsub().listen())
+    #def listen(self):
+        #ps = self.client.pubsub()
+        #ps.subscribe('guest')
+        #response = ps.listen()
+        #simid = next(response)
+        #if next(response) == b'run'
+        #self.client.pubsub().listen()
         
-    def process_request(self, user, inpSim):
+    def process_request(self):
         ps = self.client.pubsub()
-        ps.subscribe(user.name())
+        ps.subscribe('guest')
         for response in ps.listen():
-            if response['data'] == b'run':
-                self.client.publish(user.name(), 'message received')
-                print('STARTING JOB')
-                self.start_job(user, inpSim)
+           # if response['data'] == b'run':       
+            #    self.client.publish(user.name(), 'message received')
+             #   print('STARTING JOB')
+            simid = response
+            inpSim = Sim(simid)
+            self.start_job(inpSim)
         
-    def start_job(self, user, inpSim):
-        self.WF.addRunSteps(user, inpSim)
+    def start_job(self, inpSim):
+        self.WF.addRunSteps(inpSim)
         self.WF.slurm_launch()
         
 class WFlowBuilder(object):
@@ -56,7 +61,7 @@ class WFlowBuilder(object):
         self.last = 0
         #self.queue1 = [[self.simManager.getExampleSims()[0], self.simManager.getExampleSims()[1]], [1, 1]]
      
-    def addRunSteps(self, user, inpSim):
+    def addRunSteps(self, inpSim):
         #builds the following workflow for running simulations
         #creates directory for simulation using the sim name and uuid
         #writes gkyl input file to the directory
@@ -74,15 +79,17 @@ class WFlowBuilder(object):
         #ncores = str(self.queue1[1][i]) 
         #path = self.mainDir+'_'+new_id+'/'
         #print(path)
-        path = '/home/hjk6281/gkylsoft/sims/'+str(user.userId)+'/'+new_id+'/'
+        #path = '/home/hjk6281/gkylsoft/sims/'+str(user.userId)+'/'+new_id+'/'
+        path = '/home/hjk6281/hyde/backend/hydeSims/'+ new_id + '/'
+
         
         #print(path+re.sub('.lua', '_elc_0.bp', self.queue1[0][i].name()))
         print(inpSim.name())
 
         desttask = ScriptTask.from_str('mkdir ' + path)
         writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name()+'.lua', 'contents': inpSim.inpFile()}]), 'dest': path})
-        #runtask = ScriptTask.from_str('mpiexec -n '+ str(ncores) + ' gkyl ' + path+inpSim.name()+'.lua')
-        runtask = ScriptTask.from_str(' gkyl ' + path+inpSim.name()+'.lua')
+        runtask = ScriptTask.from_str('mpiexec -n '+ str(ncores) + ' gkyl ' + path+inpSim.name()+'.lua')
+        #runtask = ScriptTask.from_str(' gkyl ' + path+inpSim.name()+'.lua')
         
 
         runFlag = ScriptTask.from_str('redis-cli PUBLISH Daniel_1 Done')
