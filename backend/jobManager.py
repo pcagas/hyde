@@ -38,9 +38,10 @@ class jobManager(object):
            # if response['data'] == b'run':       
             #    self.client.publish(user.name(), 'message received')
              #   print('STARTING JOB')
-            simid = response
-            inpSim = Sim(simid)
-            self.start_job(inpSim)
+            if response is not None:
+                simid = response
+                inpSim = Sim(simid)
+                self.start_job(inpSim)
         
     def start_job(self, inpSim):
         self.WF.addRunSteps(inpSim)
