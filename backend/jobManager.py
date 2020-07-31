@@ -38,7 +38,7 @@ class jobManager(object):
            # if response['data'] == b'run':       
             #    self.client.publish(user.name(), 'message received')
              #   print('STARTING JOB')
-            if response is not None:
+            if response['data'] is not None:
                 simid = response
                 inpSim = Sim(simid)
                 self.start_job(inpSim)
