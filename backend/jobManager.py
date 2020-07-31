@@ -34,22 +34,31 @@ class jobManager(object):
     def process_request(self):
         ps = self.client.pubsub()
         ps.subscribe('guest')
+
         #ps.listen()
+        
         simBool = False
+        userBool = False
+
         for response in ps.listen():
-            if simBool == True and response['data'] is not None:
+            if userBool == True and response['data'] is not None:
+                userID = response['data'].decode('ascii')
+
+            if simBool == True and userBool == True and response['data'] is not None:
                 simid = response['data'].decode('ascii')
                 inpSim = Sim(simid)
-                self.start_job(inpSim)
-            #print(response['data'])
-           #if response['data'] == b'run':       
-            #    self.client.publish(user.name(), 'message received')
-             #   print('STARTING JOB')
+                self.start_job(inpSim, userID)
+                userBool = False
+                simBool = False
+
+            if response['data'] == b'user':
+                userBool = True
+           
             if response['data'] == b'run':
                 simBool = True
-        
-    def start_job(self, inpSim):
-        self.WF.addRunSteps(inpSim)
+            
+    def start_job(self, inpSim, userID):
+        self.WF.addRunSteps(inpSim, userID)
         self.WF.slurm_launch()
         
 class WFlowBuilder(object):
@@ -67,7 +76,7 @@ class WFlowBuilder(object):
         self.last = 0
         #self.queue1 = [[self.simManager.getExampleSims()[0], self.simManager.getExampleSims()[1]], [1, 1]]
      
-    def addRunSteps(self, inpSim):
+    def addRunSteps(self, inpSim, userID):
         #builds the following workflow for running simulations
         #creates directory for simulation using the sim name and uuid
         #writes gkyl input file to the directory
@@ -81,16 +90,11 @@ class WFlowBuilder(object):
         #i = index
 
         new_id = str(uuid.uuid4())
-        ncores=1
+        ncores=str(1)
         #ncores = str(self.queue1[1][i]) 
         #path = self.mainDir+'_'+new_id+'/'
         #print(path)
         #path = '/home/hjk6281/gkylsoft/sims/'+str(user.userId)+'/'+new_id+'/'
-        path = '/home/hjk6281/hyde/backend/hydeSims/'+ new_id + '/'
-
-        
-        #print(path+re.sub('.lua', '_elc_0.bp', self.queue1[0][i].name()))
-        print(inpSim.name())
 
         desttask = ScriptTask.from_str('mkdir ' + path)
         writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name()+'.lua', 'contents': inpSim.inpFile()}]), 'dest': path})
@@ -148,7 +152,6 @@ class WFlowBuilder(object):
     def runParallel(self):
         #test
         #launch two jobs simultaneously (2, one on each core)
-
         launch_multiprocess(self.launchpad, self.worker, 'INFO', 0, 2, 10)
 
     def getFWs(self):
@@ -189,10 +192,7 @@ class WFlowBuilder(object):
 
     def slurm_launch(self):
         #submit job to SLURM; will be launched upon reaching the front of the queue
-
         for i in self.ids:
-            #os.system('qlaunch -q /home/dalex_99/HYDEPROJECT/my_qadapter.yaml singleshot')
-            #os.system('srun --ntasks=1 --cpus-per-task=1 rlaunch singleshot -f '+ str(i))
             os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
               
     def simStates(self):
