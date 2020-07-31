@@ -20,8 +20,21 @@ window.addEventListener('load', () => {
         })
         .then(result => result.json())
     });
+
+
     const run = document.getElementById("run")
     run.addEventListener('click', () => {
-        fetch(`http://${window.location.host}/publishing`)
-    }, {once : true});
+        const path = new URL(window.location).pathname.split('/');
+        const id = path[path.length - 1];
+        fetch(`http://${window.location.host}/publishing`, {
+            method: 'POST',
+            headers: {
+                "content-type":"application/json"
+            },
+            body: JSON.stringify({
+                id
+            }),
+            redirect: 'manual'
+        })
+    });
 });

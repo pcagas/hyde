@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 jobManager.jobManager()
 
-path = '/home/hjk6281/2020_Internship/hyde'
+path = '/Users/user/2020_Internship/hyde'
 os.chdir(path)
 files = []
 
@@ -45,7 +45,8 @@ def add():
         #end
     #end
 
-    return redirect((url_for('sim', simId=newSim.simId)))
+    # return {"path" : url_for("sim")}
+    return redirect("172.23.60.54{}".format(url_for('sim', simId=newSim.simId)))
 
 @app.route("/sim/<simId>", methods=['GET','POST'])
 def sim(simId):
@@ -84,11 +85,11 @@ def adding():
     for simIdFound in editing_sim_list:
         if simIdFound == id_value:
             hyde.Sim(simIdFound).rename(name)
-            hyde.Sim(simIdFound).updateInpFile(inpFile)
+            hyde.Sim(simIdFound).updateInpFile(inpFile) 
         #end
     #end
 
-    return {"path": url_for('main')}
+    return redirect("http://172.23.60.54{}".format(url_for('sim', simId=simId)))
 
 @app.route("/example")
 def example():
@@ -106,12 +107,18 @@ def deleting():
             #end
         #end
     #end
-    return redirect(request.referrer)
+    return "http://172.23.60.54"
 
-@app.route("/publishing")
+@app.route("/publishing", method=['POST'])
 def publishing():
-    sm.pubSim(f'{guest.name()}', 'run')
-    return redirect(request.referrer)
+    id_value = request.json["id"]
+    editing_sim_list = list(sm.getSimsInState('editing'))
+    if id_value is not None:
+        for simId in editing_sim_list:
+            if simId == id_value:
+                sm.pubSim(guest.name(), 'run')
+                jobManager.process_request(guest,hyde.Sim(simId))
+    return redirect("172.23.60.54{}".format(url_for('sim', simId=newSim.simId)))
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port='5000')
