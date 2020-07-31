@@ -5,7 +5,7 @@ from backend import jobManager
 
 app = Flask(__name__)
 
-jobManager.jobManager()
+jobManager = jobManager.jobManager()
 
 path = '/home/hjk6281/hyde'
 os.chdir(path)
@@ -44,8 +44,7 @@ def add():
             #end
         #end
     #end
-
-    return redirect("172.23.60.54{}".format(url_for('sim', simId=newSim.simId)))
+    return redirect((url_for('sim', simId=newSim.simId)))
 
 @app.route("/sim/<simId>", methods=['GET','POST'])
 def sim(simId):
@@ -84,11 +83,11 @@ def adding():
     for simIdFound in editing_sim_list:
         if simIdFound == id_value:
             hyde.Sim(simIdFound).rename(name)
-            hyde.Sim(simIdFound).updateInpFile(inpFile) 
+            hyde.Sim(simIdFound).updateInpFile(inpFile)
+            simId = simIdFound 
         #end
     #end
-
-    return redirect("http://172.23.60.54{}".format(url_for('sim', simId=simId)))
+    return "adding completed"
 
 @app.route("/example")
 def example():
@@ -106,18 +105,17 @@ def deleting():
             #end
         #end
     #end
-    return "http://172.23.60.54"
+    return "deleted"
 
-@app.route("/publishing", method=['POST'])
+@app.route("/publishing", methods=['POST'])
 def publishing():
     id_value = request.json["id"]
     editing_sim_list = list(sm.getSimsInState('editing'))
     if id_value is not None:
         for simId in editing_sim_list:
             if simId == id_value:
-                sm.pubSim(guest.name(), 'run')
-                jobManager.process_request(guest,hyde.Sim(simId))
-    return redirect("172.23.60.54{}".format(url_for('sim', simId=newSim.simId)))
+                sm.pubSim(guest.name(), f'{simId}')
+    return "publishing completed"
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(host="0.0.0.0", port='5000')
