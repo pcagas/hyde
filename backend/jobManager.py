@@ -22,33 +22,25 @@ class jobManager(object):
     def __init__(self):
         self.client = redis.Redis()
         self.WF = WFlowBuilder()
-        
-    #def listen(self):
-        #ps = self.client.pubsub()
-        #ps.subscribe('guest')
-        #response = ps.listen()
-        #simid = next(response)
-        #if next(response) == b'run'
-        #self.client.pubsub().listen()
-        
+        self.userID=''
+        self.simID=''
+
     def process_request(self):
         ps = self.client.pubsub()
         ps.subscribe('guest')
-
-        #ps.listen()
         
         simBool = False
         userBool = False
 
         for response in ps.listen():
             if userBool == True and response['data'] is not None:
-                userID = response['data'].decode('ascii')
-
-            if simBool == True and userBool == True and response['data'] is not None:
-                simid = response['data'].decode('ascii')
-                inpSim = Sim(simid)
-                self.start_job(inpSim, userID)
+                self.userID = response['data'].decode('ascii')
                 userBool = False
+
+            if simBool == True and userBool == False and response['data'] is not None:
+                self.simId = response['data'].decode('ascii')
+                inpSim = Sim(self.simID)
+                self.start_job(inpSim, self.userID)
                 simBool = False
 
             if response['data'] == b'user':
@@ -94,7 +86,7 @@ class WFlowBuilder(object):
         #ncores = str(self.queue1[1][i]) 
         #path = self.mainDir+'_'+new_id+'/'
         #print(path)
-        #path = '/home/hjk6281/gkylsoft/sims/'+str(user.userId)+'/'+new_id+'/'
+        path = '/home/hjk6281/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
 
         desttask = ScriptTask.from_str('mkdir ' + path)
         writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name()+'.lua', 'contents': inpSim.inpFile()}]), 'dest': path})
