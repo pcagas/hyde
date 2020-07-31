@@ -37,17 +37,16 @@ class jobManager(object):
         #ps.listen()
         simBool = False
         for response in ps.listen():
+            if simBool == True and response['data'] is not None:
+                simid = response['data']
+                inpSim = Sim(simid)
+                self.start_job(inpSim)
             #print(response['data'])
            #if response['data'] == b'run':       
             #    self.client.publish(user.name(), 'message received')
              #   print('STARTING JOB')
             if response['data'] == b'run':
                 simBool = True
-
-            if simBool == True:
-                simid = response['data']
-                inpSim = Sim(simid)
-                self.start_job(inpSim)
         
     def start_job(self, inpSim):
         self.WF.addRunSteps(inpSim)
