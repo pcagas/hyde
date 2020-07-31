@@ -89,8 +89,8 @@ class WFlowBuilder(object):
 
         desttask = ScriptTask.from_str('mkdir ' + path)
         writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name()+'.lua', 'contents': inpSim.inpFile()}]), 'dest': path})
-        runtask = ScriptTask.from_str('mpiexec -n '+ ncores + ' gkyl ' + path+inpSim.name()+'.lua')
-        #runtask = ScriptTask.from_str(' gkyl ' + path+inpSim.name()+'.lua')
+        #runtask = ScriptTask.from_str('mpiexec -n '+ ncores + ' gkyl ' + path+inpSim.name()+'.lua')
+        runtask = ScriptTask.from_str('gkyl ' + path+inpSim.name()+'.lua')
         
 
         runFlag = ScriptTask.from_str('redis-cli PUBLISH Daniel_1 Done')
