@@ -38,7 +38,7 @@ class jobManager(object):
                 userBool = False
 
             if simBool == True and userBool == False and response['data'] is not None:
-                self.simId = response['data'].decode('ascii')
+                self.simID = response['data'].decode('ascii')
                 inpSim = Sim(self.simID)
                 self.start_job(inpSim, self.userID)
                 simBool = False
