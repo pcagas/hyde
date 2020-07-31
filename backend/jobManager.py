@@ -31,7 +31,6 @@ class jobManager(object):
         
         simBool = False
         userBool = False
-
         for response in ps.listen():
             if userBool == True and response['data'] is not None:
                 self.userID = response['data'].decode('ascii')

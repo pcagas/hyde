@@ -10,9 +10,9 @@
             }
         ]
     },
-    "fw_id": 175,
-    "created_on": "2020-07-31T17:49:01.418255",
-    "updated_on": "2020-07-31T17:49:07.758620",
+    "fw_id": 105,
+    "created_on": "2020-07-31T20:06:13.651076",
+    "updated_on": "2020-07-31T20:06:22.195871",
     "launches": [
         {
             "fworker": {
@@ -21,7 +21,7 @@
                 "query": "{}",
                 "env": {}
             },
-            "fw_id": 175,
+            "fw_id": 105,
             "launch_dir": "/home/hjk6281/hyde/backend",
             "host": "arc-a71f233b",
             "ip": "10.0.1.17",
@@ -31,11 +31,11 @@
             "state_history": [
                 {
                     "state": "RUNNING",
-                    "created_on": "2020-07-31T17:49:07.757736",
-                    "updated_on": "2020-07-31T17:49:07.757740"
+                    "created_on": "2020-07-31T20:06:22.194693",
+                    "updated_on": "2020-07-31T20:06:22.194700"
                 }
             ],
-            "launch_id": 93
+            "launch_id": 39
         }
     ],
     "state": "RUNNING",

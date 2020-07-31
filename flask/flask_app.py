@@ -114,6 +114,9 @@ def publishing():
     if id_value is not None:
         for simId in editing_sim_list:
             if simId == id_value:
+                sm.pubSim(guest.name(), 'user')
+                sm.pubSim(guest.name(), f'{guest.userId}')
+                sm.pubSim(guest.name(), 'run')
                 sm.pubSim(guest.name(), f'{simId}')
     return "publishing completed"
 
