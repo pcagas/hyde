@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 jobManager.jobManager()
 
-path = '/Users/user/2020_Internship/hyde'
+path = '/home/hjk6281/2020_Internship/hyde'
 os.chdir(path)
 files = []
 
