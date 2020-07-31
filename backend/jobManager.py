@@ -34,12 +34,18 @@ class jobManager(object):
     def process_request(self):
         ps = self.client.pubsub()
         ps.subscribe('guest')
+        #ps.listen()
+        simBool = False
         for response in ps.listen():
-           # if response['data'] == b'run':       
+            #print(response['data'])
+           #if response['data'] == b'run':       
             #    self.client.publish(user.name(), 'message received')
              #   print('STARTING JOB')
-            if response['data'] is not None:
-                simid = response
+            if response['data'] == b'run':
+                simBool = True
+
+            if simBool == True:
+                simid = response['data']
                 inpSim = Sim(simid)
                 self.start_job(inpSim)
         
