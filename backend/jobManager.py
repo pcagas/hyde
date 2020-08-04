@@ -60,7 +60,7 @@ class WFlowBuilder(object):
 
         self.simManager = SimManager()
         #self.mainDir = '/home/adaniel99/hyde/backend/hydeSims/'
-        self.worker = FWorker(name='myWorker')
+        # self.worker = FWorker(name='myWorker')
         self.launchpad = LaunchPad()
         self.ids = []
         self.fws = []

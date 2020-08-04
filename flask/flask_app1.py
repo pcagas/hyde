@@ -38,12 +38,12 @@ def add():
     name_value = request.form.get("example_select")
     print(name_value)
 
-    if name_value is None:
-        newSim = sm.createNewSim("New_Simulation", guest.userId, "")
-    else:
+    if name_value is None: # add button
+        newSim = sm.createNewSim("New_Simulation", guest.userId, "") #a new sim
+    else: # if a user clicks a butoon example and choose one of the example files
         for i in files:
-            if name_value == i: 
-                newSim = sm.createNewSim(files[i].name(), guest.userId, files[i].inpFile())
+            if name_value == i.name(): 
+                newSim = sm.createNewSim(i.name(), guest.userId, i.inpFile())
             #end
         #end
     #end
@@ -125,6 +125,7 @@ def publishing():
                 sm.pubSim(guest.name(), 'run')
                 sm.pubSim(guest.name(), f'{simId}')
     return "publishing completed"
+
 
 if __name__ == '__main__':
     app.run(host='localhost', port='5000')
