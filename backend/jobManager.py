@@ -32,21 +32,26 @@ class jobManager(object):
         simBool = False
         userBool = False
         for response in ps.listen():
+            print('listening')
             if userBool == True and response['data'] is not None:
                 self.userID = response['data'].decode('ascii')
                 userBool = False
+                print('user processed')
 
             if simBool == True and userBool == False and response['data'] is not None:
                 self.simID = response['data'].decode('ascii')
                 inpSim = Sim(self.simID)
                 self.start_job(inpSim, self.userID)
                 simBool = False
+                print('sim processed')
 
             if response['data'] == b'user':
                 userBool = True
+                print('user flag recieved')
            
             if response['data'] == b'run':
                 simBool = True
+                print('run order recieved')
             
     def start_job(self, inpSim, userID):
         self.WF.addRunSteps(inpSim, userID)
@@ -85,19 +90,21 @@ class WFlowBuilder(object):
         #ncores = str(self.queue1[1][i]) 
         #path = self.mainDir+'_'+new_id+'/'
         #print(path)
-        path = '/home/hjk6281/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
+        #path = '/home/hjk6281/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
+        #path = '/home/adaniel99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
+        path = '/home/dalex_99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
 
         desttask = ScriptTask.from_str('mkdir ' + path)
-        writetask = FileWriteTask({'files_to_write': ([{'filename': '"'+inpSim.name()+'"'+'.lua', 'contents': inpSim.inpFile()}]), 'dest': path})
+        writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name(), 'contents': inpSim.inpFile()}]), 'dest': path})
         #runtask = ScriptTask.from_str('mpiexec -n '+ ncores + ' gkyl ' + path+inpSim.name()+'.lua')
-        runtask = ScriptTask.from_str('gkyl ' + path+'"'+inpSim.name()+'"'+'.lua')
+        runtask = ScriptTask.from_str('gkyl ' + path+inpSim.name())
         
 
-        runFlag = ScriptTask.from_str('redis-cli PUBLISH Daniel_1 Done')
+        runFlag = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+ 'Done')
         deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(7+self.last))
         flagFail  = ScriptTask.from_str('Failed')
             
-        plottask = ScriptTask.from_str('pgkyl -f '+ path+re.sub('.lua', '_elc_0.bp', inpSim.name())+'.lua' + ' plot')
+        plottask = ScriptTask.from_str('pgkyl -f '+ path+re.sub('.lua', '_elc_0.bp', inpSim.name()) + ' plot')
 
         dest = Firework(desttask, name= 'Make Folder', fw_id=1+self.last)
         self.ids.append(1+self.last)
@@ -184,7 +191,9 @@ class WFlowBuilder(object):
     def slurm_launch(self):
         #submit job to SLURM; will be launched upon reaching the front of the queue
         for i in self.ids:
-            os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
+            #os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
+            #if firework i has fizzled, break
+            os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=xps rlaunch singleshot -f '+ str(i))
               
     def simStates(self):
         #gets current state (str) for each firework in the queue
