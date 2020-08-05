@@ -7,19 +7,11 @@ app = Flask(__name__)
 
 jobManager = jobManager.jobManager()
 
-path = '/home/hjk6281/hyde'
-os.chdir(path)
-files = []
-
-for f in os.listdir(path):
-    if f.endswith(".lua"):
-        files.append(os.path.splitext(f)[0])
-    #end
-#end
-
 um = hyde.UserManager()
 sm = hyde.SimManager()
 guest = um.createNewUser("guest", "guest", "guest@gmail.gov", "127.0.0.5")
+
+files = sm.getExampleSims()
 
 @app.route('/')
 def main():
@@ -34,13 +26,14 @@ def main():
 @app.route('/add', methods=['POST','GET'])
 def add():
     name_value = request.form.get("example_select")
+    print(name_value)
 
-    if name_value is None:
-        newSim = sm.createNewSim("New Simulation", guest.userId, "")
-    else:
+    if name_value is None: # add button
+        newSim = sm.createNewSim("New_Simulation", guest.userId, "") #a new sim
+    else: # if a user clicks a butoon example and choose one of the example files
         for i in files:
-            if name_value == i: 
-                newSim = sm.createNewSim(name_value, guest.userId, open(f'{name_value}.lua').read())
+            if name_value == i.name(): 
+                newSim = sm.createNewSim(i.name(), guest.userId, i.inpFile())
             #end
         #end
     #end
@@ -68,7 +61,6 @@ def sim(simId):
     # if a user wants to create a new simulation, selectedSim -> default name&blank input file
     # otherwise, selectedSim -> sim object
     return render_template('sim.html', selectedSim=selectedSim, simulation=[hyde.Sim(simId) for simId in editing_sim_list])
-
     
 @app.route("/adding", methods=['POST'])
 def adding():
@@ -78,6 +70,7 @@ def adding():
 
     id_value = request.json["id"]# retrieve sim id, name and input file from sim.html
     name = request.json["name"]
+    print(name)
     inpFile = request.json['inpFile']
 
     for simIdFound in editing_sim_list:
@@ -91,8 +84,10 @@ def adding():
 
 @app.route("/example")
 def example():
-    editing_sim_list = list(sm.getSimsInState('editing'))
-    return render_template('example.html', example=files, simulation=[hyde.Sim(simId) for simId in editing_sim_list])
+    #editing_sim_list = list(sm.getSimsInState('editing'))
+    editing_sim_list=list(sm.getExampleSims())
+    #return render_template('example.html', example=files, simulation=[hyde.Sim(simId) for simId in editing_sim_list])
+    return render_template('example.html', example=files, simulation=files)
 
 @app.route("/deleting", methods=['POST'])
 def deleting():
@@ -119,6 +114,7 @@ def publishing():
                 sm.pubSim(guest.name(), 'run')
                 sm.pubSim(guest.name(), f'{simId}')
     return "publishing completed"
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port='5000')
