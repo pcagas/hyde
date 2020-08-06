@@ -193,7 +193,7 @@ class WFlowBuilder(object):
         for i in self.ids:
             #os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
             #if firework i has fizzled, break
-            os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=xps rlaunch singleshot -f '+ str(i))
+            os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
               
     def simStates(self):
         #gets current state (str) for each firework in the queue
