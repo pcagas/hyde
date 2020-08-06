@@ -91,8 +91,8 @@ class WFlowBuilder(object):
         #path = self.mainDir+'_'+new_id+'/'
         #print(path)
         #path = '/home/hjk6281/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
-        #path = '/home/adaniel99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
-        path = '/home/dalex_99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
+        path = '/home/adaniel99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
+        #path = '/home/dalex_99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
 
         desttask = ScriptTask.from_str('mkdir ' + path)
         writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name(), 'contents': inpSim.inpFile()}]), 'dest': path})
@@ -102,7 +102,7 @@ class WFlowBuilder(object):
 
         runFlag = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+ 'Done')
         deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(7+self.last))
-        flagFail  = ScriptTask.from_str('Failed')
+        flagFail  = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+ 'Done')
             
         plottask = ScriptTask.from_str('pgkyl -f '+ path+re.sub('.lua', '_elc_0.bp', inpSim.name()) + ' plot')
 
@@ -117,10 +117,10 @@ class WFlowBuilder(object):
         self.ids.append(4+self.last)
         delfail = Firework(deleteFail, name='remove fail flag', fw_id=5+self.last)
         self.ids.append(5+self.last)
-        plot = Firework(plottask, name='plot', fw_id=6+self.last)
+        #plot = Firework(plottask, name='plot', fw_id=6+self.last)
         self.ids.append(6+self.last)
         failflag = Firework(flagFail, name='fail flag', fw_id=7+self.last)
-        self.ids.append(7+self.last)
+        #self.ids.append(7+self.last)
 
         
         self.fws.append(dest)
@@ -129,14 +129,14 @@ class WFlowBuilder(object):
         self.fws.append(flag1)
         self.fws.append(delfail)
         self.fws.append(failflag)
-        self.fws.append(plot)
+        #self.fws.append(plot)
 
         print(self.ids)
-        wf = Workflow([dest, write, run, flag1, delfail, failflag, plot], {dest: [write], write: [run], run: [flag1], flag1: [delfail], delfail: [plot]}, name = 'Running '+inpSim.name()+'_'+str(ncores))
+        #wf = Workflow([dest, write, run, flag1, delfail, failflag, plot], {dest: [write], write: [run], run: [flag1], flag1: [delfail], delfail: [plot]}, name = 'Running '+inpSim.name()+'_'+str(ncores))
+        wf = Workflow([dest, write, run, flag1, delfail, failflag], {dest: [write], write: [run], run: [flag1], flag1: [delfail]}, name = 'Running '+inpSim.name()+'_'+str(ncores))
         self.launchpad.add_wf(wf)
         
     def addFullQueue(self):
-
         for Sim in self.queue1:
             self.addRunSteps()
             
