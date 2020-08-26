@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 
 import redis
 import sys
+import multiprocessing
 
 #from fireworks.flask_site.app import app
 class jobManager(object):
@@ -24,6 +25,10 @@ class jobManager(object):
         self.WF = WFlowBuilder()
         self.userID=''
         self.simID=''
+
+    def start_job(self, inpSim, userID):
+        self.WF.addRunSteps(inpSim, userID)
+        self.WF.slurm_launch()
 
     def process_request(self):
         ps = self.client.pubsub()
@@ -41,7 +46,9 @@ class jobManager(object):
             if simBool == True and userBool == False and response['data'] is not None:
                 self.simID = response['data'].decode('ascii')
                 inpSim = Sim(self.simID)
-                self.start_job(inpSim, self.userID)
+                userId = self.userID
+                p1 = multiprocessing.Process(target=jobManager.start_job, args=(self, inpSim, userId))
+                p1.start()
                 simBool = False
                 print('sim processed')
 
@@ -52,11 +59,7 @@ class jobManager(object):
             if response['data'] == b'run':
                 simBool = True
                 print('run order recieved')
-            
-    def start_job(self, inpSim, userID):
-        self.WF.addRunSteps(inpSim, userID)
-        self.WF.slurm_launch()
-        
+                
 class WFlowBuilder(object):
 
     #This class builds and submits workflow(s) for a particular job submission
@@ -91,8 +94,8 @@ class WFlowBuilder(object):
         #path = self.mainDir+'_'+new_id+'/'
         #print(path)
         #path = '/home/hjk6281/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
-        path = '/home/adaniel99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
-        #path = '/home/dalex_99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
+        #path = '/home/adaniel99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
+        path = '/home/dalex_99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
 
         desttask = ScriptTask.from_str('mkdir ' + path)
         writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name(), 'contents': inpSim.inpFile()}]), 'dest': path})
@@ -193,7 +196,7 @@ class WFlowBuilder(object):
         for i in self.ids:
             #os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
             #if firework i has fizzled, break
-            os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
+            os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=xps rlaunch singleshot -f '+ str(i))
               
     def simStates(self):
         #gets current state (str) for each firework in the queue
