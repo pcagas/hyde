@@ -4,7 +4,11 @@ The Hyde backend manages simulation jobs and data.  Simulations submited through
 
 # Backend Dependencies
  * SLURM
- * Fireworks
+ * Fireworks(MongoDB)
+ * Redis
+ * Gkeyll
+ * flask
+ * postgkyl
 
 Fireworks can be installed using the instructions listed in its [documentation](https://materialsproject.github.io/fireworks/installation.html).
 
@@ -13,8 +17,14 @@ Starting Hyde requires that MongoDB and controller.py are running on the cluster
 
 Assuming all SLURM daemons are running on the cluster
  * start Redis
+ ~~~~~~~~~~~~
+ redis-server
+ ~~~~~~~~~~~~
  * start MongoDB
- * Run the listener program, controller.py (separate shell)
+ ~~~~~~~~~~~~
+ sudo service mongodb start
+ ~~~~~~~~~~~~
+ * Run the listener program, controller.py in /hyde/backend/ (separate shell)
  * Run flask the flask server (separate shell)
  
 
