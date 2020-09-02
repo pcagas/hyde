@@ -11,3 +11,11 @@ Fireworks can be installed using the instructions listed in its [documentation](
 # Usage
 Starting Hyde requires that MongoDB and controller.py are running on the cluster in question. The user must identify a partition on the cluster which he or she hopes to run a simulation before submitting a job.
 
+Assuming all SLURM daemons are running on the cluster
+ * start Redis
+ * start MongoDB
+ * Run the listener program, controller.py (separate shell)
+ * Run flask the flask server (separate shell)
+ 
+
+
