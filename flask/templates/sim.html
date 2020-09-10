@@ -25,7 +25,17 @@
         <input type="button" id="run" value="Run">
     </form>
 </div>
-
+<div id="status"></div>
+<script>
+  function sse() {
+  var source = new EventSource('/stream');
+  var display = document.getElementById("status");
+  source.onmessage = function(e) {
+  display.textContent =  e.data;
+  };
+  }
+  sse();
+            </script>
 <script src="{{ url_for('static', filename='js/ace.js') }}" type="text/javascript" charset="utf-8"></script> 
 <script src="{{ url_for('static', filename='js/ext-language_tools.js') }}"></script>
 <script src="{{ url_for('static', filename='js/sim.js') }}" type="text/javascript" charset="utf-8"></script> 
