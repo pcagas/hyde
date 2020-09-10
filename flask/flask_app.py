@@ -6,13 +6,22 @@ from backend import jobManager
 app = Flask(__name__)
 
 jobManager = jobManager.jobManager()
-
 um = hyde.UserManager()
 sm = hyde.SimManager()
 guest = um.createNewUser("guest", "guest", "guest@gmail.gov", "127.0.0.5")
-
 files = sm.getExampleSims()
 
+def event_stream(user):
+    ps = client.pubsub()
+    ps.subscribe(user.name())
+    for message in ps.listen():
+        print (message)
+        if message['type']=='message':
+            yield 'data: %s\n\n' % message['data'].decode('utf-8')
+            
+@app.route('/stream')
+def stream():
+    return flask.Response(event_stream(guest.name()),mimetype="text/event-stream")
 @app.route('/')
 def main():
     r""" main page. ask users to choose following options
