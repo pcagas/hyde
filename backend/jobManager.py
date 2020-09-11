@@ -103,9 +103,9 @@ class WFlowBuilder(object):
         runtask = ScriptTask.from_str('gkyl ' + path+inpSim.name())
         
 
-        runFlag = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+ 'Done')
-        deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(7+self.last))
-        flagFail  = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+ 'Done')
+        runFlag = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+ ' Done')
+        deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(6+self.last))
+        flagFail  = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+ ' Failed')
             
         plottask = ScriptTask.from_str('pgkyl -f '+ path+re.sub('.lua', '_elc_0.bp', inpSim.name()) + ' plot')
 
@@ -121,8 +121,9 @@ class WFlowBuilder(object):
         delfail = Firework(deleteFail, name='remove fail flag', fw_id=5+self.last)
         self.ids.append(5+self.last)
         #plot = Firework(plottask, name='plot', fw_id=6+self.last)
+        #self.ids.append(6+self.last)
+        failflag = Firework(flagFail, name='fail flag', fw_id=6+self.last)
         self.ids.append(6+self.last)
-        failflag = Firework(flagFail, name='fail flag', fw_id=7+self.last)
         #self.ids.append(7+self.last)
 
         
