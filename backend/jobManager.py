@@ -2,7 +2,7 @@ import hyde
 from hyde.lib.Sim import SimManager
 from hyde.lib.Sim import Sim
 from hyde.lib.User import User
-import postgkyl as pg
+#import postgkyl as pg
 
 from fireworks import Firework, Workflow, LaunchPad, ScriptTask, PyTask, FileWriteTask, FWorker
 from fireworks.core.rocket_launcher import rapidfire, launch_rocket
@@ -95,17 +95,15 @@ class WFlowBuilder(object):
         #print(path)
         #path = '/home/hjk6281/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
         #path = '/home/adaniel99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
-        path = '/home/dalex_99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
+        path = '/home/adaniel99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
 
         desttask = ScriptTask.from_str('mkdir ' + path)
         writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name(), 'contents': inpSim.inpFile()}]), 'dest': path})
         #runtask = ScriptTask.from_str('mpiexec -n '+ ncores + ' gkyl ' + path+inpSim.name()+'.lua')
-        runtask = ScriptTask.from_str('gkyl ' + path+inpSim.name())
-        
-
-        runFlag = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+ ' Done')
+        runtask = ScriptTask.from_str('redis-cli PUBLISH ' + User(userID).name()+'2 "Running Simulation"; gkyl ' + path+inpSim.name())
+        runFlag = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+'2'+ ' Done')
         deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(6+self.last))
-        flagFail  = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+ ' Failed')
+        flagFail  = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+'2' + ' Failed')
             
         plottask = ScriptTask.from_str('pgkyl -f '+ path+re.sub('.lua', '_elc_0.bp', inpSim.name()) + ' plot')
 
@@ -197,7 +195,7 @@ class WFlowBuilder(object):
         for i in self.ids:
             #os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
             #if firework i has fizzled, break
-            os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=xps rlaunch singleshot -f '+ str(i))
+            os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
               
     def simStates(self):
         #gets current state (str) for each firework in the queue
