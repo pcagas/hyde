@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request,redirect
+from flask import Flask, render_template, url_for, request, redirect, Response
 import os
 import hyde
 from backend import jobManager
@@ -21,7 +21,7 @@ def event_stream(user):
             
 @app.route('/stream')
 def stream():
-    return flask.Response(event_stream(guest.name()),mimetype="text/event-stream")
+    return Response(event_stream(guest.name()),mimetype="text/event-stream")
 @app.route('/')
 def main():
     r""" main page. ask users to choose following options
