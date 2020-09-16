@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect, Response
 import os
 import hyde
+import redis
 from backend import jobManager
 
 app = Flask(__name__)
@@ -10,10 +11,11 @@ um = hyde.UserManager()
 sm = hyde.SimManager()
 guest = um.createNewUser("guest", "guest", "guest@gmail.gov", "127.0.0.5")
 files = sm.getExampleSims()
+client = redis.Redis()
 
 def event_stream(user):
     ps = client.pubsub()
-    ps.subscribe(user.name())
+    ps.subscribe(user)
     for message in ps.listen():
         print (message)
         if message['type']=='message':
@@ -21,7 +23,8 @@ def event_stream(user):
             
 @app.route('/stream')
 def stream():
-    return Response(event_stream(guest.name()),mimetype="text/event-stream")
+    return Response(event_stream(guest.name()+'2'), mimetype="text/event-stream")
+
 @app.route('/')
 def main():
     r""" main page. ask users to choose following options
@@ -122,6 +125,7 @@ def publishing():
                 sm.pubSim(guest.name(), f'{guest.userId}')
                 sm.pubSim(guest.name(), 'run')
                 sm.pubSim(guest.name(), f'{simId}')
+                sm.pubSim(guest.name()+'2', 'Run Order Sent')
     return "publishing completed"
 
 
