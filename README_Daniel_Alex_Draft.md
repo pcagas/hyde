@@ -24,8 +24,17 @@ Assuming all SLURM daemons are running on the cluster
  ~~~~~~~~~~~~
  sudo service mongodb start
  ~~~~~~~~~~~~
- * Run the listener program, controller.py in /hyde/backend/ (separate shell)
- * Run flask the flask server (separate shell)
- 
+*Navigate to $HOME/hyde/backend/ and run the controller.py program
+~~~~~~
+python controller.py
+~~~~~~
+*Navigate to $HOME/hyde/flask/ and start the flask server with the following command
+
+*Ensure munge, slurmctld, and slurmd are
+
+~~~~~~
+python flask_app.py
+~~~~~~
+
 
 
