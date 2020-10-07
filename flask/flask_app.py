@@ -1,8 +1,10 @@
-from flask import Flask, render_template, url_for, request, redirect, Response
+from flask import Flask, render_template, url_for, request, redirect, Response, json
+import bokeh
 import os
 import hyde
 import redis
 from backend import jobManager
+import postgkyl as pg
 
 app = Flask(__name__)
 
@@ -128,6 +130,20 @@ def publishing():
                 sm.pubSim(guest.name()+'2', 'Run Order Sent')
     return "publishing completed"
 
+@app.route("/plotpage")
+def load():
+    return render_template('plot.html')
+
+
+@app.route("/plot")
+def plot():
+    data = pg.GData('/home/adaniel99/gkyl/Regression/vm-two-stream/p1/rt-two-stream-p1_elc_0.bp')
+    # dg = pg.GInterpModal(data)
+    # dg.interpolate(stack=True)
+    fig = pg.output.blot(data)
+    output = json.dumps(bokeh.embed.json_item(fig, "name"))
+    return bokeh.embed.file_html(fig, bokeh.resources.CDN, "name")
+    #return bokeh.embed.json_item(fig, "name")
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port='5000')
