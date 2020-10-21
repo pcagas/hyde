@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.8.10/themes/smoothness/jquery-ui.css" type="text/css">
+  <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.10/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.2.1.min.js"></script>
+
+  <head>
+  </head>
+  <body>
+    <div id="plot"></div>
+    <script>
+      fetch('/plot1')
+      .then(function(response) { return response.json(); })
+          .then(function(item) { return Bokeh.embed.embed_item(item,"plot"); })
+  </script>
+</body>
