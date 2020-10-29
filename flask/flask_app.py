@@ -14,6 +14,8 @@ sm = hyde.SimManager()
 guest = um.createNewUser("guest", "guest", "guest@gmail.gov", "127.0.0.5")
 files = sm.getExampleSims()
 client = redis.Redis()
+post_files = []
+folder = ''
 
 def event_stream(user):
     ps = client.pubsub()
@@ -22,7 +24,7 @@ def event_stream(user):
         print (message)
         if message['type']=='message':
             yield 'data: %s\n\n' % message['data'].decode('utf-8')
-            
+
 @app.route('/stream')
 def stream():
     return Response(event_stream(guest.name()+'2'), mimetype="text/event-stream")
@@ -74,7 +76,7 @@ def sim(simId):
 
     # if a user wants to create a new simulation, selectedSim -> default name&blank input file
     # otherwise, selectedSim -> sim object
-    return render_template('sim.html', selectedSim=selectedSim, simulation=[hyde.Sim(simId) for simId in editing_sim_list])
+    return render_template('sim.html', selectedSim=selectedSim, sid = simId, simulation=[hyde.Sim(simId) for simId in editing_sim_list])
     
 @app.route("/adding", methods=['POST'])
 def adding():
@@ -129,15 +131,36 @@ def publishing():
                 sm.pubSim(guest.name(), f'{simId}')
                 sm.pubSim(guest.name()+'2', 'Run Order Sent')
     return "publishing completed"
-@app.route("/plot")
-def plot1():
-    return render_template('plot.html')
+#@app.route("/sim/<simId>/plot")
+@app.route("/sim/<simId>/plot", methods=["GET","POST"])
+def plot(simId):
+    folder = '/home/adaniel99/gkylsoft/sims/'+guest.userId+'/'+simId+'/'
+    names = []
+    for file in os.listdir(folder):
+        if file.endswith(".bp"):
+            names.append(file)
+            post_files.append(folder+file)
+    print(post_files)
+    print(guest.userId)
+    return render_template('plot.html', plot_files=names)
 @app.route('/plot1')
-def plot():
-    data = pg.GData('/home/adaniel99/gkyl/Regression/vm-two-stream/p1/rt-two-stream-p1_elc_0.bp')
+def plot1():
+    #id_value = request.json["id"]
+    
+    #if id_value is not None:
+    #    for simId in editing_sim_list:
+    #        if simId == id_value:
+    #            folder = '/home/adaniel99/gkylsoft/sims/'+guest.userID+'/'+simId+'/'
+    #for file in os.listdir(folder):
+    #    if file.endswith(".bp"):
+    #        post_files.append(file)
+
+    #data = pg.GData('/home/adaniel99/gkyl/Regression/vm-two-stream/p1/rt-two-stream-p1_elc_0.bp')
+    data = pg.GData(post_files[2])
     fig = pg.output.blot(data)
     output = json.dumps(bokeh.embed.json_item(fig))
+    #print(post_files)
     return output
-    
+   
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port='5000')
