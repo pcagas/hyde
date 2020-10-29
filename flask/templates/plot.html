@@ -3,11 +3,19 @@
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.8.10/themes/smoothness/jquery-ui.css" type="text/css">
   <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.8.10/jquery-ui.min.js"></script>
   <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.2.1.min.js"></script>
-
+<script scr="{{ url_for('static', filename='js/sim.js') }}" type="text/javascript" charset="u\
+tf-8"></script>
   <head>
   </head>
   <body>
-    <div id="plot"></div>
+    <select name="example_select">
+      <option>Choose Plot</option>
+      {% for f in plot_files %}
+      <option value='{{ f}}'>{{ f}}</option>
+
+      {% endfor %}
+              </select>
+    
     <script>
       fetch('/plot1')
       .then(function(response) { return response.json(); })
