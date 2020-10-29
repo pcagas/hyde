@@ -4,6 +4,8 @@
     <title>Add</title>
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/sim.css')}}"/>
     <script scr="{{ url_for('static', filename='js/sim.js') }}" type="text/javascript" charset="utf-8"></script>
+    <script scr="{{ url_for('static', filename='js/plot.js') }}" type="text/javascript" charset="u\
+tf-8"></script>
 </head>
 {% extends 'index.html' %}
 
@@ -25,6 +27,7 @@
         <input type="button" id="run" value="Run">
     </form>
 </div>
+  <button id='plot'><a href="/sim/{{sid}}/plot">PLOT</a></button>
 <div id="status">Ready</div>
 <script>
   function sse() {
