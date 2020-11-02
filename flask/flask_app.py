@@ -16,8 +16,12 @@ files = sm.getExampleSims()
 client = redis.Redis()
 post_files = []
 folder = ''
+new_plot=[]
 
 def event_stream(user):
+    #user is a string representing the name of the redis pubsub channel
+    #the name will correspond to the user running the simulation
+    #second user channel meant for displaying workflow status on webpage
     ps = client.pubsub()
     ps.subscribe(user)
     for message in ps.listen():
@@ -27,6 +31,7 @@ def event_stream(user):
 
 @app.route('/stream')
 def stream():
+    #event stream input second channel
     return Response(event_stream(guest.name()+'2'), mimetype="text/event-stream")
 
 @app.route('/')
@@ -42,7 +47,6 @@ def main():
 @app.route('/add', methods=['POST','GET'])
 def add():
     name_value = request.form.get("example_select")
-    print(name_value)
 
     if name_value is None: # add button
         newSim = sm.createNewSim("New_Simulation", guest.userId, "") #a new sim
@@ -130,37 +134,36 @@ def publishing():
                 sm.pubSim(guest.name(), 'run')
                 sm.pubSim(guest.name(), f'{simId}')
                 sm.pubSim(guest.name()+'2', 'Run Order Sent')
+    print("publishing flag")
     return "publishing completed"
 #@app.route("/sim/<simId>/plot")
-@app.route("/sim/<simId>/plot", methods=["GET","POST"])
-def plot(simId):
+@app.route('/sim/<simId>/plot', methods=['GET','POST'])
+def pladd(simId):
+    print("flag")
     folder = '/home/adaniel99/gkylsoft/sims/'+guest.userId+'/'+simId+'/'
     names = []
     for file in os.listdir(folder):
         if file.endswith(".bp"):
             names.append(file)
-            post_files.append(folder+file)
+            post_files.append(file)
+
+    return render_template('plist.html', plot_files=post_files, iD=simId)
+
+@app.route("/sim/<simId>/plot/display", methods=["GET","POST"])
+def plot(simId):
+    pfile = request.form.get("plot_form")
+    folder = '/home/adaniel99/gkylsoft/sims/'+guest.userId+'/'+simId+'/'
     print(post_files)
     print(guest.userId)
-    return render_template('plot.html', plot_files=names)
-@app.route('/plot1')
+    new_plot.append(folder+pfile)
+    return render_template('plot.html')
+@app.route('/plot1',methods=["GET","POST"])
 def plot1():
-    #id_value = request.json["id"]
-    
-    #if id_value is not None:
-    #    for simId in editing_sim_list:
-    #        if simId == id_value:
-    #            folder = '/home/adaniel99/gkylsoft/sims/'+guest.userID+'/'+simId+'/'
-    #for file in os.listdir(folder):
-    #    if file.endswith(".bp"):
-    #        post_files.append(file)
-
     #data = pg.GData('/home/adaniel99/gkyl/Regression/vm-two-stream/p1/rt-two-stream-p1_elc_0.bp')
-    data = pg.GData(post_files[2])
+    data = pg.GData(new_plot[len(new_plot)-1])
     fig = pg.output.blot(data)
     output = json.dumps(bokeh.embed.json_item(fig))
-    #print(post_files)
     return output
-   
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port='5000')

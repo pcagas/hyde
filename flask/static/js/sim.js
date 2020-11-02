@@ -21,7 +21,6 @@ window.addEventListener('load', () => {
         .then(result => result.json())
     });
 
-
     const run = document.getElementById("run")
     run.addEventListener('click', () => {
         const path = new URL(window.location).pathname.split('/');

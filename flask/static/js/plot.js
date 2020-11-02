@@ -1,31 +1,27 @@
 window.addEventListener('load', () => {
-//    const add_form = document.getElementById("add_form");
-//    add_form.addEventListener('submit', e => {
+//    const plad = document.getElementById("plot_form")
+//    plad.addEventListener('submit', () => {
 //	e.preventDefault();
-//	const path = new URL(window.location).pathname.split('/'); // ["", "sim", "uuid"]
+//	const path = new URL(window.location).pathname.split('/');//["", "sim", "uuid", "plot"]
 //	const id = path[path.length - 2];
-//	const name = e.target[0].value;
-//	const inpFile = editor.getValue();
-//	fetch(`http://${window.location.host}/getplot`, { //fetch API, sending info to this url with optional parameters
+//	fetch(`http://${window.location.host}/plot`, {
 //	    method: 'POST',
 //	    headers: {
 //		"content-type":"application/json"
 //	    },
 //	    body: JSON.stringify({
 //		id,
-//		name//,
-//		inpFile
+//		path
 //	    }),
 //	    redirect: 'manual'
 //	})
 //	    .then(result => result.json())
-  //  });
-
+//  });
 
     const plot = document.getElementById("plot")
     run.addEventListener('click', () => {
 	const path = new URL(window.location).pathname.split('/');
-	const id = path[path.length - 2];
+	const id = path[path.length - 1];
 	fetch(`http://${window.location.host}/plot`, {
 	    method: 'POST',
 	    headers: {
