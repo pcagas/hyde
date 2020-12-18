@@ -25,7 +25,8 @@ class jobManager(object):
         self.WF = WFlowBuilder()
         self.userID=''
         self.simID=''
-
+        self.rerun= False
+        
     def start_job(self, inpSim, userID):
         self.WF.addRunSteps(inpSim, userID)
         self.WF.slurm_launch()
@@ -47,7 +48,7 @@ class jobManager(object):
                 self.simID = response['data'].decode('ascii')
                 inpSim = Sim(self.simID)
                 userId = self.userID
-                p1 = multiprocessing.Process(target=jobManager.start_job, args=(self, inpSim, userId))
+                p1 = multiprocessing.Process(target=jobManager.start_job, args=(self, self.simID, userId))
                 p1.start()
                 simBool = False
                 print('sim processed')
@@ -67,13 +68,11 @@ class WFlowBuilder(object):
     def __init__(self):
 
         self.simManager = SimManager()
-        #self.mainDir = '/home/adaniel99/hyde/backend/hydeSims/'
-        # self.worker = FWorker(name='myWorker')
         self.launchpad = LaunchPad()
         self.ids = []
         self.fws = []
         self.last = 0
-        #self.queue1 = [[self.simManager.getExampleSims()[0], self.simManager.getExampleSims()[1]], [1, 1]]
+        self.rerun = False
      
     def addRunSteps(self, inpSim, userID):
         #builds the following workflow for running simulations
@@ -84,68 +83,74 @@ class WFlowBuilder(object):
         #plots task
 
         #userid --> for folder location
-        
+        self.fws = []
+        print(inpSim)
         self.last=len(self.launchpad.get_fw_ids())
-        #i = index
+#        for fwork in self.launchpad.get_fw_ids():
+#            self.launchpad.delete_fws([fwork])       
+        sim = Sim(inpSim)
 
-        new_id = str(uuid.uuid4())
         ncores=str(1)
-        #ncores = str(self.queue1[1][i]) 
-        #path = self.mainDir+'_'+new_id+'/'
-        #print(path)
-        #path = '/home/hjk6281/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
-        #path = '/home/adaniel99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
-        path = '/home/adaniel99/gkylsoft/sims/'+str(userID)+'/'+new_id+'/'
 
-        desttask = ScriptTask.from_str('mkdir ' + path)
-        writetask = FileWriteTask({'files_to_write': ([{'filename': inpSim.name(), 'contents': inpSim.inpFile()}]), 'dest': path})
-        #runtask = ScriptTask.from_str('mpiexec -n '+ ncores + ' gkyl ' + path+inpSim.name()+'.lua')
-        runtask = ScriptTask.from_str('redis-cli PUBLISH ' + User(userID).name()+'2 "Running Simulation"; gkyl ' + path+inpSim.name())
-        runFlag = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+'2'+ ' Done')
-        deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(6+self.last))
-        flagFail  = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+'2' + ' Failed')
+        path = '/home/adaniel99/gkylsoft/sims/'+str(userID)+'/'+inpSim+'/'
+        n = 0
+        for f in os.listdir('/home/adaniel99/gkylsoft/sims/'):
+            if f==str(userID):
+                for f in os.listdir('/home/adaniel99/gkylsoft/sims/'+str(userID)+'/'):
+                    if f == inpSim:
+                        n=n+1
+                        self.rerun=True
+          
+        if n ==0:
+            desttask = ScriptTask.from_str('mkdir ' + path)
+            writetask = FileWriteTask({'files_to_write': ([{'filename': sim.name(), 'contents': sim.inpFile()}]), 'dest': path})
+            runtask = ScriptTask.from_str('redis-cli PUBLISH ' + User(userID).name()+'2 "Running Simulation"; gkyl ' + path+sim.name())
+            runFlag = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+'2'+ ' Done')
+            deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(6+self.last))
+            flagFail  = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+'2' + ' Failed')
+            self.ids.clear()
+            dest = Firework(desttask, name= 'Make Folder', fw_id=1+self.last)
+            self.ids.append(1+self.last)
+            write = Firework(writetask, name= 'Write', fw_id=2+self.last)
+            self.ids.append(2+self.last)
+            run = Firework(runtask, name='Run', fw_id=3+self.last)
+            self.ids.append(3+self.last)
+            flag1 = Firework(runFlag, name='done?', fw_id=4+self.last)
+            self.ids.append(4+self.last)
+            delfail = Firework(deleteFail, name='remove fail flag', fw_id=5+self.last)
+            self.ids.append(5+self.last)
+            failflag = Firework(flagFail, name='fail flag', fw_id=6+self.last)
+            self.ids.append(6+self.last)
+
+            self.fws.append(dest)
+            self.fws.append(write)
+            self.fws.append(run)
+            self.fws.append(flag1)
+            self.fws.append(delfail)
+            self.fws.append(failflag)
+            wf = Workflow(self.fws, {dest: [write], write: [run], run: [flag1], flag1: [delfail]}, name = 'Running '+sim.name())
+            self.launchpad.add_wf(wf)
             
-        plottask = ScriptTask.from_str('pgkyl -f '+ path+re.sub('.lua', '_elc_0.bp', inpSim.name()) + ' plot')
+        if n ==1:
+            writetask = FileWriteTask({'files_to_write': ([{'filename': sim.name(), 'contents': sim.inpFile()}]), 'dest': path})
+            runtask = ScriptTask.from_str('redis-cli PUBLISH '+User(userID).name()+'2 "Running Simulation"; gkyl ' + path+sim.name())
+            runFlag = ScriptTask.from_str('redis-cli PUBLISH '+ User(userID).name()+'2'+ ' Done')
+            deleteFail = ScriptTask.from_str('lpad defuse_fws -i ' + str(5+self.last))
+            flagFail  = ScriptTask.from_str('redis-cli PUBLISH '+ User(userID).name()+'2' + ' Failed')
+            self.ids.clear()
+            write = Firework(writetask, name= 'Write', fw_id=1+self.last)
+            self.ids.append(1+self.last)
+            run = Firework(runtask, name='Run', fw_id=2+self.last)
+            self.ids.append(2+self.last)
+            flag1 = Firework(runFlag, name='done?', fw_id=3+self.last)
+            self.ids.append(3+self.last)
+            delfail = Firework(deleteFail, name='remove fail flag', fw_id=4+self.last)
+            self.ids.append(4+self.last)
+            failflag = Firework(flagFail, name='fail flag', fw_id=5+self.last)
+            self.ids.append(5+self.last)
+            wf = Workflow([write, run, flag1, delfail, failflag], {write: [run], run: [flag1], flag1: [delfail]}, name = 'Running '+sim.name())
+            self.launchpad.add_wf(wf)
 
-        dest = Firework(desttask, name= 'Make Folder', fw_id=1+self.last)
-        self.ids.append(1+self.last)
-        write = Firework(writetask, name= 'Write', fw_id=2+self.last)
-        self.ids.append(2+self.last)
-        run = Firework(runtask, name='Run', fw_id=3+self.last)
-        self.ids.append(3+self.last)
-        
-        flag1 = Firework(runFlag, name='done?', fw_id=4+self.last)
-        self.ids.append(4+self.last)
-        delfail = Firework(deleteFail, name='remove fail flag', fw_id=5+self.last)
-        self.ids.append(5+self.last)
-        #plot = Firework(plottask, name='plot', fw_id=6+self.last)
-        #self.ids.append(6+self.last)
-        failflag = Firework(flagFail, name='fail flag', fw_id=6+self.last)
-        self.ids.append(6+self.last)
-        #self.ids.append(7+self.last)
-
-        
-        self.fws.append(dest)
-        self.fws.append(write)
-        self.fws.append(run)
-        self.fws.append(flag1)
-        self.fws.append(delfail)
-        self.fws.append(failflag)
-        #self.fws.append(plot)
-
-        print(self.ids)
-        #wf = Workflow([dest, write, run, flag1, delfail, failflag, plot], {dest: [write], write: [run], run: [flag1], flag1: [delfail], delfail: [plot]}, name = 'Running '+inpSim.name()+'_'+str(ncores))
-        wf = Workflow([dest, write, run, flag1, delfail, failflag], {dest: [write], write: [run], run: [flag1], flag1: [delfail]}, name = 'Running '+inpSim.name()+'_'+str(ncores))
-        self.launchpad.add_wf(wf)
-        
-    def addFullQueue(self):
-        for Sim in self.queue1:
-            self.addRunSteps()
-            
-    def rerun0(self):
-        self.launchpad.rerun_fw(self.ids[self.queue1[0][0].name()+' run'])
-        launch_rocket(self.launchpad, self.worker)
-        
     def runAll(self):
         for i in self.ids:
             launch_rocket(self.launchpad, self.worker, fw_id=i)      
@@ -161,42 +166,19 @@ class WFlowBuilder(object):
         self.fws = fws1
         return self.fws
     
-    def overload(self):
-        #for testing multiple simultaneous runs
-        
-
-        task1 = ScriptTask.from_str('gkyl /home/adaniel99/gkyl/Regression/vm-two-stream/p1/rt-two-stream-p1.lua')
-        task2 = ScriptTask.from_str('gkyl /home/adaniel99/gkyl/Regression/vm-two-stream/p2/rt-two-stream-p2.lua')
-
-        run1 = Firework(task1, name = 'run1')
-        run2 = Firework(task2, name = 'run2')
-        run3 = Firework(task1, name = 'run3')
-        run4 = Firework(task1, name = 'run4')
-        run5 = Firework(task1, name = 'run5')
-        run6 = Firework(task1, name = 'run6')
-        run7 = Firework(task1, name = 'run7')
-        run8 = Firework(task1, name = 'run8')
-        run9 = Firework(task1, name = 'run9')
-
-        self.launchpad.add_wf(run1)
-        #self.launchpad.add_wf(run2)
-        #self.launchpad.add_wf(run3)
-        #self.launchpad.add_wf(run4)
-        #self.launchpad.add_wf(run5)
-        #self.launchpad.add_wf(run6)
-        #self.launchpad.add_wf(run7)
-        #self.launchpad.add_wf(run8)
-        #self.launchpad.add_wf(run9)
-
-        #launch_multiprocess(self.launchpad, self.worker, 'INFO', 1, 2, 1)
-
     def slurm_launch(self):
-        #submit job to SLURM; will be launched upon reaching the front of the queue
-        for i in self.ids:
-            #os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
-            #if firework i has fizzled, break
-            os.system('salloc --tasks=1 --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
-              
+        print("slurm_launch method")
+        if self.rerun==True:
+            print(self.launchpad.get_fw_ids())
+            print(self.rerun)
+            for i in self.ids:
+                #os.system('salloc --core-spec=1 --time=5 --partition=VME lpad rerun_fws -i '+str(i))
+                os.system('salloc --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
+        if self.rerun==False:
+            print(self.launchpad.get_fw_ids())
+            print(self.rerun)
+            for i in self.ids:
+                os.system('salloc --core-spec=1 --time=5 --partition=VME rlaunch singleshot -f '+ str(i))
     def simStates(self):
         #gets current state (str) for each firework in the queue
         #states: ('READY', 'WAITING', 'RUNNING', or 'COMPLETE')

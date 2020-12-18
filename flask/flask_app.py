@@ -28,12 +28,19 @@ def event_stream(user):
         print (message)
         if message['type']=='message':
             yield 'data: %s\n\n' % message['data'].decode('utf-8')
-
+#@app.route('/login', methods=['GET','POST'])
+#def login():
+#    if request.method == 'POST':
+#            
+#    return render_template('login.html')
+#
 @app.route('/stream')
 def stream():
     #event stream input second channel
     return Response(event_stream(guest.name()+'2'), mimetype="text/event-stream")
-
+#@app.route('/user/')
+#def profile(user):
+#        return
 @app.route('/')
 def main():
     r""" main page. ask users to choose following options
