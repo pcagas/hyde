@@ -5,9 +5,14 @@
     <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-2.2.1.min.js"></script>
   <script scr="{{ url_for('static', filename='js/sim.js') }}" type="text/javascript" charset="utf-8"></script>
   <script scr="{{ url_for('static', filename='js/plot.js') }}" type="text/javascript" charset="utf-8"></script>
-<head></head>
-<body>
-<form id="plot_form" action="/sim/{{iD}}/plot/display" method='POST' target="_blank">
+  {% extends 'index.html' %}
+
+  {% block content %}
+  <head></head>
+  <span><a href="/">Home</a></span>
+  <span><a href="/sim/{{sid}}">Simulation</a></span>
+  <body>
+<form id="plot_form" action="/sim/{{iD}}/plot/display" method='POST'>
   <select name="plot_form">
     <option>Choose Plot</option>
     {% for f in plot_files %}
@@ -15,4 +20,6 @@
     {% endfor %}
   </select>
   <input type="submit" value="Select">
-</body>
+
+  </body>
+{% endblock %}

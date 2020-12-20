@@ -11,6 +11,7 @@ tf-8"></script>
 
 {% block content %}
 <span><a href="/">Home</a></span>
+<span><a href="/sim/{{sid}}">Simulation</a></span>
 <div id='sim'>
     <form id="add_form">
         <label for="add_name"><b>Name</b>：
@@ -27,7 +28,7 @@ tf-8"></script>
         <input type="button" id="run" value="Run">
     </form>
 </div>
-  <button id='plot'><a href="/sim/{{sid}}/plot">PLOT</a></button>
+  <span><a href="/sim/{{sid}}/plot">Plot</a></span>
 <div id="status">Ready</div>
 <script>
   function sse() {
@@ -38,7 +39,8 @@ tf-8"></script>
   };
   }
   sse();
-            </script>
+</script>
+
 <script src="{{ url_for('static', filename='js/ace.js') }}" type="text/javascript" charset="utf-8"></script> 
 <script src="{{ url_for('static', filename='js/ext-language_tools.js') }}"></script>
 <script src="{{ url_for('static', filename='js/sim.js') }}" type="text/javascript" charset="utf-8"></script> 

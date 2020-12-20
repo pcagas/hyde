@@ -143,7 +143,7 @@ def publishing():
                 sm.pubSim(guest.name()+'2', 'Run Order Sent')
     print("publishing flag")
     return "publishing completed"
-#@app.route("/sim/<simId>/plot")
+
 @app.route('/sim/<simId>/plot', methods=['GET','POST'])
 def pladd(simId):
     print("flag")
@@ -163,7 +163,8 @@ def plot(simId):
     print(post_files)
     print(guest.userId)
     new_plot.append(folder+pfile)
-    return render_template('plot.html')
+    return render_template('plot.html', iD=simId, plot_files=post_files)
+
 @app.route('/plot1',methods=["GET","POST"])
 def plot1():
     #data = pg.GData('/home/adaniel99/gkyl/Regression/vm-two-stream/p1/rt-two-stream-p1_elc_0.bp')
